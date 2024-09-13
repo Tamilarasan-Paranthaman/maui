@@ -345,7 +345,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 			UITableViewCell[] GetMoreNavigationCells()
 			{
-				if (MoreNavigationController.TopViewController.View is UITableView uITableView)
+				if (MoreNavigationController.TopViewController.View is UITableView uITableView && uITableView.Window is not null)
 					return uITableView.VisibleCells;
 
 				return EmptyUITableViewCellArray;
@@ -357,10 +357,6 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			if (shellSection == null || _currentSection == shellSection)
 				return;
 			var renderer = RendererForShellContent(shellSection);
-			
-			if (renderer == null)
-				return;
-
 			if (renderer?.ViewController != SelectedViewController)
 				SelectedViewController = renderer.ViewController;
 			CurrentRenderer = renderer;
