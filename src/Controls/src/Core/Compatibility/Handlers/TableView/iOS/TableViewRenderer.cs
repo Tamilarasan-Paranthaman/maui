@@ -33,26 +33,37 @@ namespace Microsoft.Maui.Controls.Handlers.Compatibility
 				_previousFrame = Frame;
 		}
 
+		private protected override void DisconnectHandlerCore()
+		{
+			CleanUpResources();
+			base.DisconnectHandlerCore();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
-				var viewsToLookAt = new Stack<UIView>(Subviews);
-				while (viewsToLookAt.Count > 0)
-				{
-					var view = viewsToLookAt.Pop();
-					var viewCellRenderer = view as ViewCellRenderer.ViewTableCell;
-					if (viewCellRenderer != null)
-						viewCellRenderer.Dispose();
-					else
-					{
-						foreach (var child in view.Subviews)
-							viewsToLookAt.Push(child);
-					}
-				}
+				CleanUpResources();
 			}
 
 			base.Dispose(disposing);
+		}
+
+		void CleanUpResources()
+		{
+			var viewsToLookAt = new Stack<UIView>(Subviews);
+			while (viewsToLookAt.Count > 0)
+			{
+				var view = viewsToLookAt.Pop();
+				var viewCellRenderer = view as ViewCellRenderer.ViewTableCell;
+				if (viewCellRenderer != null)
+					viewCellRenderer.Dispose();
+				else
+				{
+					foreach (var child in view.Subviews)
+						viewsToLookAt.Push(child);
+				}
+			}
 		}
 
 		protected override UITableView CreateNativeControl()

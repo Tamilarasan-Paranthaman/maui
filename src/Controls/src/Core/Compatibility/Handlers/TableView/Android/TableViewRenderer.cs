@@ -171,6 +171,12 @@ namespace Microsoft.Maui.Controls.Handlers.Compatibility
 			return base.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
+		private protected override void DisconnectHandlerCore()
+		{
+			CleanUpResources();
+			base.DisconnectHandlerCore();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -182,21 +188,25 @@ namespace Microsoft.Maui.Controls.Handlers.Compatibility
 
 			if (disposing)
 			{
-				// Unhook the adapter from the ListView before disposing of it
-				if (Control != null)
-				{
-					Control.Adapter = null;
-				}
-
-				if (_adapter != null)
-				{
-					_adapter.Dispose();
-					_adapter = null;
-				}
+				CleanUpResources();
 			}
 
-
 			base.Dispose(disposing);
+		}
+
+		void CleanUpResources()
+		{
+			// Unhook the adapter from the ListView before disposing of it
+			if (Control != null)
+			{
+				Control.Adapter = null;
+			}
+
+			if (_adapter != null)
+			{
+				_adapter.Dispose();
+				_adapter = null;
+			}
 		}
 	}
 }

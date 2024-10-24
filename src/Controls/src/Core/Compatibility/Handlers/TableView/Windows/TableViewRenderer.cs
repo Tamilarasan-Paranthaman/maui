@@ -60,17 +60,28 @@ namespace Microsoft.Maui.Controls.Handlers.Compatibility
 			base.OnElementChanged(e);
 		}
 
+		private protected override void DisconnectHandlerCore()
+		{
+			CleanUpResources();
+			base.DisconnectHandlerCore();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				if (Control != null)
-				{
-					Control.SelectionChanged -= OnSelectionChanged;
-				}
+				CleanUpResources();
 			}
 			base.Dispose(disposing);
+		}
+
+		void CleanUpResources()
+		{
+			if (Control != null)
+			{
+				Control.SelectionChanged -= OnSelectionChanged;
+			}
 		}
 
 		void OnModelChanged(object sender, EventArgs e)
