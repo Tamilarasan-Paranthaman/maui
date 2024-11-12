@@ -645,6 +645,19 @@ namespace Microsoft.Maui.Controls
 
 		}
 
+		internal void ProcessPendingHandlerUpdates()
+		{
+			if (_pendingHandlerUpdatesFromBPSet.Count <= 0)
+			{
+				return;
+			}
+
+			foreach (var propertyName in _pendingHandlerUpdatesFromBPSet)
+			{
+				UpdateHandlerValue(propertyName, true);
+			}
+		}
+
 		/// <summary>Method that is called when a bound property is changed.</summary>
 		/// <param name="propertyName">The name of the bound property that changed.</param>
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
