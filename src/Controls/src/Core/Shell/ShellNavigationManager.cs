@@ -184,11 +184,7 @@ namespace Microsoft.Maui.Controls
 					navigationRequest.StackRequest == ShellNavigationRequest.WhatToDoWithTheStack.ReplaceIt &&
 					nextActiveSection?.Navigation?.NavigationStack?.Count > 1)
 				{
-					// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
-					await _shell.Dispatcher.DispatchAsync(() =>
-					{
-						return _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, parameters, _shell.FindMauiContext()?.Services, animate, isRelativePopping);
-					});
+					await _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, parameters, _shell.FindMauiContext()?.Services, animate, isRelativePopping);
 				}
 			}
 			else

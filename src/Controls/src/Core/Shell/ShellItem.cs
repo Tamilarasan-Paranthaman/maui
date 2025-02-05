@@ -325,10 +325,15 @@ namespace Microsoft.Maui.Controls
 		internal override void SendAppearing()
 		{
 			base.SendAppearing();
-			if (CurrentItem != null && Parent is Shell shell && shell.CurrentItem == this)
+
+			Dispatcher.Dispatch(() =>
 			{
-				CurrentItem.SendAppearing();
-			}
+				if (CurrentItem != null && Parent is Shell shell && shell.CurrentItem == this)
+				{
+					CurrentItem.SendAppearing();
+				}
+			});
+
 		}
 
 		internal override void SendDisappearing()
