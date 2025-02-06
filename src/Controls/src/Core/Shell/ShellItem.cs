@@ -326,8 +326,9 @@ namespace Microsoft.Maui.Controls
 		{
 			base.SendAppearing();
 
-			Dispatcher.Dispatch(() =>
+			Dispatcher.Dispatch(async () =>
 			{
+				await Task.Delay(10);
 				if (CurrentItem != null && Parent is Shell shell && shell.CurrentItem == this)
 				{
 					CurrentItem.SendAppearing();

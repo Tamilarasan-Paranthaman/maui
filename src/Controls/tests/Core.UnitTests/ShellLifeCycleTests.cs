@@ -590,7 +590,6 @@ namespace Microsoft.Maui.Controls.Core.UnitTests
 			await shell.GoToAsync("//ShellLifeCycleTestPage2");
 
 			await shell.GoToAsync("//ShellLifeCycleTestHomePage");
-			await Task.Delay(1000);
 			Assert.Equal(1, firstPageAppearingCount);
 			Assert.Equal(2, appearingCountHomePage);
 		}
@@ -648,7 +647,7 @@ namespace Microsoft.Maui.Controls.Core.UnitTests
 
 			// Switch back to tab 1 but maintain stack
 			shell.CurrentItem = mainContent;
-			await Task.Delay(100);
+			await Task.Delay(20);
 			// This should fire when returning to tab 1 because it's still visible
 			Assert.Equal(2, firstPageAppearingCount);
 			Assert.Equal(1, appearingCountHomePage);
