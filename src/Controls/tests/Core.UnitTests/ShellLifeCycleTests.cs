@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls.Internals;
@@ -588,11 +587,12 @@ namespace Microsoft.Maui.Controls.Core.UnitTests
 			};
 
 			await shell.GoToAsync("//ShellLifeCycleTestPage2");
-
 			await shell.GoToAsync("//ShellLifeCycleTestHomePage");
 			Assert.Equal(1, firstPageAppearingCount);
 			Assert.Equal(2, appearingCountHomePage);
 		}
+
+
 
 		[Fact]
 		public async Task VerifyPageAppearingSequence2() // Temporary Name
@@ -625,9 +625,6 @@ namespace Microsoft.Maui.Controls.Core.UnitTests
 				ContentTemplate = new DataTemplate(() => new ShellLifeCycleTestPage2())
 			});
 
-			var contentPage1 = new ShellLifeCycleTestPage1();
-			contentPage1.Title = "IssuePage";
-
 			shell.Items.Add(mainContent);
 			var tabbar = new TabBar();
 			tabbar.Items.Add(tab);
@@ -652,6 +649,7 @@ namespace Microsoft.Maui.Controls.Core.UnitTests
 			Assert.Equal(2, firstPageAppearingCount);
 			Assert.Equal(1, appearingCountHomePage);
 		}
+
 		public class ShellLifeCycleTestHomePage : ContentPage { }
 
 		public class ShellLifeCycleTestPage1 : ContentPage
