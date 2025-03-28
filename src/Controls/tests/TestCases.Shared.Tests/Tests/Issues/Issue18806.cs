@@ -11,7 +11,7 @@ public class Issue18806 : _IssuesUITest
 	}
 
 	public override string Issue => "SwipeItemView won't render FontImageSource on first opening";
-	
+
 	[Test]
 	[Category(UITestCategories.SwipeView)]
 	public void ItemImageSourceShouldBeVisible()
