@@ -2,4 +2,46 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Maui.Controls.Sample.MainPage"
              xmlns:local="clr-namespace:Maui.Controls.Sample">
+
+        <StackLayout>
+                <Label Text="Welcome to .NET MAUI!"
+                       Margin="0,10"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"/>
+
+                <Button Text="Click Me to Display Alert"
+                        Margin="0,20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        Clicked="Button_ClickedAsync"/>
+
+                <Button Text="Click Me to Display Action Sheet"
+                        Margin="0,20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        Clicked="Button_ClickedActionSheet"/>
+
+                <Button Text="Click Me to Display Prompt"
+                        Margin="0,20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        Clicked="Button_ClickedPrompt"/>
+
+                <Button Text="Navigate to Sample Page"
+                        Margin="0,20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        Clicked="Button_Clicked"/>
+        </StackLayout>
+
+        <!-- <StackLayout>
+              <Label Text="Home Page"
+                     VerticalOptions="Center"
+                     HorizontalOptions="Center"/>
+
+              <Button Text="Navigate to Sample Page"
+                      VerticalOptions="Center"
+                      HorizontalOptions="Center"
+                      Clicked="Button_Clicked"/>
+       </StackLayout> -->
 </ContentPage>
