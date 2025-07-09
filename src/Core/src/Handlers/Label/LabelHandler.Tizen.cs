@@ -12,12 +12,12 @@ namespace Microsoft.Maui.Handlers
 			// This prevents unnecessary container setup/teardown during theme changes
 			bool currentlyNeedsContainer = handler.HasContainer;
 			bool shouldNeedContainer = handler is ViewHandler viewHandler ? viewHandler.NeedsContainer : label.NeedsContainer();
-			
+
 			if (currentlyNeedsContainer != shouldNeedContainer)
 			{
 				handler.UpdateValue(nameof(handler.ContainerView));
 			}
-			
+
 			handler.ToPlatform()?.UpdateBackground(label);
 		}
 
