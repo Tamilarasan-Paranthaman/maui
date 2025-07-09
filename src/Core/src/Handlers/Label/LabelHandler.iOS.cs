@@ -7,13 +7,24 @@ namespace Microsoft.Maui.Handlers
 {
 	public partial class LabelHandler : ViewHandler<ILabel, MauiLabel>
 	{
+		private bool _hasHadBackground;
+
 		protected override MauiLabel CreatePlatformView() => new MauiLabel();
 
 		public override bool NeedsContainer =>
+			VirtualView?.Background != null || _hasHadBackground ||
 			base.NeedsContainer;
 
 		public static void MapBackground(ILabelHandler handler, ILabel label)
 		{
+			// Track that this label has had a background set to maintain container stability
+			if (handler is LabelHandler labelHandler && label.Background != null)
+			{
+				labelHandler._hasHadBackground = true;
+			}
+
+			handler.UpdateValue(nameof(IViewHandler.ContainerView));
+
 			handler.ToPlatform().UpdateBackground(label);
 		}
 

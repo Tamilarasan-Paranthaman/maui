@@ -5,9 +5,12 @@ namespace Microsoft.Maui.Handlers
 {
 	public partial class LabelHandler : ViewHandler<ILabel, TextBlock>
 	{
+		private bool _hasHadBackground;
+
 		protected override TextBlock CreatePlatformView() => new TextBlock();
 
 		public override bool NeedsContainer =>
+			VirtualView?.Background != null || _hasHadBackground ||
 			(VirtualView != null && VirtualView.VerticalTextAlignment != TextAlignment.Start) ||
 			base.NeedsContainer;
 
@@ -35,6 +38,13 @@ namespace Microsoft.Maui.Handlers
 
 		public static void MapBackground(ILabelHandler handler, ILabel label)
 		{
+			// Track that this label has had a background set to maintain container stability
+			if (handler is LabelHandler labelHandler && label.Background != null)
+			{
+				labelHandler._hasHadBackground = true;
+			}
+
+			handler.UpdateValue(nameof(IViewHandler.ContainerView));
 			handler.ToPlatform().UpdateBackground(label);
 		}
 
