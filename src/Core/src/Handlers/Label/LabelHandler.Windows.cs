@@ -8,7 +8,6 @@ namespace Microsoft.Maui.Handlers
 		protected override TextBlock CreatePlatformView() => new TextBlock();
 
 		public override bool NeedsContainer =>
-			VirtualView?.Background != null ||
 			(VirtualView != null && VirtualView.VerticalTextAlignment != TextAlignment.Start) ||
 			base.NeedsContainer;
 
@@ -36,16 +35,6 @@ namespace Microsoft.Maui.Handlers
 
 		public static void MapBackground(ILabelHandler handler, ILabel label)
 		{
-			// Only update container if the container requirement actually changed
-			// This prevents unnecessary container setup/teardown during theme changes
-			bool currentlyNeedsContainer = handler.HasContainer;
-			bool shouldNeedContainer = handler is ViewHandler viewHandler ? viewHandler.NeedsContainer : label.NeedsContainer();
-			
-			if (currentlyNeedsContainer != shouldNeedContainer)
-			{
-				handler.UpdateValue(nameof(IViewHandler.ContainerView));
-			}
-
 			handler.ToPlatform().UpdateBackground(label);
 		}
 
