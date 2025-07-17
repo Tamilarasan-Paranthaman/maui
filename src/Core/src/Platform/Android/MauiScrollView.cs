@@ -230,15 +230,6 @@ namespace Microsoft.Maui.Platform
 				hScrollViewHeight = _isBidirectional ? Math.Max(hScrollViewHeight, scrollViewContentHeight) : hScrollViewHeight;
 				_hScrollView.Layout(0, 0, hScrollViewWidth, hScrollViewHeight);
 			}
-
-			if (CrossPlatformArrange == null)
-			{
-				return;
-			}
-
-			var destination = Context!.ToCrossPlatformRectInReferenceFrame(left, top, right, bottom);
-
-			CrossPlatformArrange(destination);
 		}
 
 		public void ScrollTo(int x, int y, bool instant, Action finished)
@@ -322,8 +313,6 @@ namespace Microsoft.Maui.Platform
 		{
 			OnScrollChanged(scrollX, scrollY, oldScrollX, oldScrollY);
 		}
-
-		internal Func<Graphics.Rect, Graphics.Size>? CrossPlatformArrange { get; set; }
 	}
 
 	internal class MauiHorizontalScrollView : HorizontalScrollView, IScrollBarView
