@@ -25,12 +25,14 @@ namespace Microsoft.Maui.Handlers
 		{
 			base.ConnectHandler(platformView);
 			platformView.ScrollChange += ScrollChange;
+			platformView.CrossPlatformArrange = VirtualView.CrossPlatformArrange;
 		}
 
 		protected override void DisconnectHandler(MauiScrollView platformView)
 		{
 			base.DisconnectHandler(platformView);
 			platformView.ScrollChange -= ScrollChange;
+			platformView.CrossPlatformArrange = null;
 		}
 
 		public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
