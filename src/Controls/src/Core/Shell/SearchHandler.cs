@@ -30,6 +30,8 @@ namespace Microsoft.Maui.Controls
 			get { return (bool)GetValue(IsFocusedProperty); }
 		}
 
+		internal DataFlowDirection DataFlowDirection { get; set; }
+
 		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			var element = (SearchHandler)bindable;

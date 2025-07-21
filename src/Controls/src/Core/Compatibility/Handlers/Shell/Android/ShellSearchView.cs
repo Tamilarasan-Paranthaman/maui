@@ -66,7 +66,11 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 			UpdateClearButtonState();
 
+			SearchHandler.DataFlowDirection = DataFlowDirection.FromPlatform;
+
 			SearchHandler.SetValue(SearchHandler.QueryProperty, text);
+
+			SearchHandler.DataFlowDirection = DataFlowDirection.ToPlatform;
 
 			if (SearchHandler.ShowsResults)
 			{

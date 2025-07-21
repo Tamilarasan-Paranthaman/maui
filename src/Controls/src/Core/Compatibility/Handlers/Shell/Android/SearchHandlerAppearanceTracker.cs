@@ -86,6 +86,50 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			{
 				UpdateAutomationId();
 			}
+			else if (e.Is(SearchHandler.CharacterSpacingProperty))
+			{
+				UpdateCharacterSpacing();
+			}
+			else if (e.Is(SearchHandler.QueryProperty))
+			{
+				UpdateText();
+			}
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (_editText is not null)
+			{
+				_editText.LetterSpacing = _searchHandler.CharacterSpacing.ToEm();
+			}
+		}
+
+		void UpdateText()
+		{
+			string newText = _searchHandler.UpdateFormsText(_searchHandler.Query ?? string.Empty, _searchHandler.TextTransform);
+
+			if (_editText.Text == newText)
+			{
+				return;
+			}
+
+			if (_searchHandler.DataFlowDirection == DataFlowDirection.FromPlatform)
+			{
+				_editText.SetTextKeepState(newText);
+			}
+			else
+			{
+				_editText.Text = newText;
+
+				if (newText.Length <= _editText.Text.Length)
+				{
+					_editText.SetSelection(newText.Length);
+				}
+				else
+				{
+					_editText.SetSelection(_editText.Text.Length);
+				}
+			}
 		}
 
 		void EditTextFocusChange(object s, AView.FocusChangeEventArgs args)
