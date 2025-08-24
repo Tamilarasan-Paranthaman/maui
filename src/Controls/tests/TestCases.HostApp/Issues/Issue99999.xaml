@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="using:Maui.Controls.Sample.Issues"
+    x:Class="Maui.Controls.Sample.Issues.Issue99999"
+    Title="Label Theme Change Test">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label" x:Key="TestLabelStyle">
+                <Setter Property="TextColor" Value="Blue" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            
+            <ResourceDictionary x:Key="Theme1">
+                <Color x:Key="TestColor">Red</Color>
+                <Color x:Key="BackgroundColor">LightBlue</Color>
+            </ResourceDictionary>
+            
+            <ResourceDictionary x:Key="Theme2">
+                <Color x:Key="TestColor">Green</Color>
+                <Color x:Key="BackgroundColor">LightGreen</Color>
+            </ResourceDictionary>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout Padding="20">
+        <Label 
+            x:Name="TestLabel"
+            AutomationId="TestLabel"
+            Text="This Label should NOT disappear when the Theme is changed."
+            Style="{StaticResource TestLabelStyle}" />
+            
+        <Label 
+            x:Name="TestLabel2"
+            AutomationId="TestLabel2"
+            Text="Another test label with transparent background."
+            BackgroundColor="Transparent"
+            TextColor="{DynamicResource TestColor}" />
+            
+        <Button 
+            x:Name="ToggleThemeButton"
+            AutomationId="ToggleThemeButton"
+            Text="Toggle Theme"
+            Clicked="OnToggleThemeClicked" />
+            
+        <Label
+            x:Name="StatusLabel"
+            AutomationId="StatusLabel"
+            Text="Test Status: Ready"
+            FontSize="14" />
+    </StackLayout>
+</local:TestContentPage>
