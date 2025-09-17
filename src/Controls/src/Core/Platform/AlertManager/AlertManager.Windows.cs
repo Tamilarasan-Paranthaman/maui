@@ -234,9 +234,46 @@ namespace Microsoft.Maui.Controls.Platform
 
 			static async Task<bool> ShowAlert(ContentDialog alert)
 			{
-				ContentDialogResult result = await alert.ShowAsync();
+				UpdateContentDialogTheme(alert);
 
-				return result == ContentDialogResult.Primary;
+				EventHandler<AppThemeChangedEventArgs>? handler = null;
+
+				if (Application.Current is not null)
+				{
+					handler = (_, __) => UpdateContentDialogTheme(alert);
+					Application.Current.RequestedThemeChanged += handler;
+				}
+
+				try
+				{
+					var dialogResult = await alert.ShowAsync();
+					return dialogResult == ContentDialogResult.Primary;
+				}
+				finally
+				{
+					if (Application.Current is not null && handler is not null)
+					{
+						Application.Current.RequestedThemeChanged -= handler;
+					}
+				}
+			}
+
+			// Workaround for ContentDialog not updating its theme when theme changes
+			// This can be removed when the issue is fixed in WinUI
+			// https://github.com/microsoft/microsoft-ui-xaml/issues/6577
+			static void UpdateContentDialogTheme(ContentDialog alert)
+			{
+				if (Application.Current is not null)
+				{
+					if (Application.Current.RequestedTheme == ApplicationModel.AppTheme.Dark)
+					{
+						alert.RequestedTheme = ElementTheme.Dark;
+					}
+					else
+					{
+						alert.RequestedTheme = ElementTheme.Light;
+					}
+				}
 			}
 
 			static async Task<string?> ShowPrompt(PromptDialog prompt)
