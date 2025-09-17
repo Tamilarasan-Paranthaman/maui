@@ -19,8 +19,8 @@ public class Issue26878 : _IssuesUITest
 		try
 		{
 			App.WaitForElement("ShowAlertButton");
-			App.Tap("ShowAlertButton");
 			App.SetDarkTheme();
+			App.Tap("ShowAlertButton");
 			VerifyScreenshot();
 		}
 		finally
