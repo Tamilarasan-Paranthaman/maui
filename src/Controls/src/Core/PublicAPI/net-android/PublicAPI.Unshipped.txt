@@ -51,3 +51,6 @@ Microsoft.Maui.Controls.ImageSource.InvalidateStyle() -> void
 Microsoft.Maui.Controls.Span.InvalidateStyle() -> void
 Microsoft.Maui.Controls.StyleableElement.InvalidateStyle() -> void
 ~static Microsoft.Maui.Controls.VisualStateManager.InvalidateVisualStates(Microsoft.Maui.Controls.VisualElement visualElement) -> void
+Microsoft.Maui.Controls.TitleBar.TitleFontAttributes.get -> Microsoft.Maui.Controls.FontAttributes
+Microsoft.Maui.Controls.TitleBar.TitleFontAttributes.set -> void
+static readonly Microsoft.Maui.Controls.TitleBar.TitleFontAttributesProperty -> Microsoft.Maui.Controls.BindableProperty!
