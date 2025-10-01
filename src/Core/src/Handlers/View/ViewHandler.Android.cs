@@ -251,7 +251,10 @@ namespace Microsoft.Maui.Handlers
 
 		void OnPlatformViewFocusChange(object? sender, PlatformView.FocusChangeEventArgs e)
 		{
-			VirtualView?.IsFocused = e.HasFocus;
+			if (VirtualView is not null)
+			{
+				VirtualView.IsFocused = e.HasFocus;
+			}
 		}
 
 		internal static void MapSafeAreaEdges(IViewHandler handler, IView view)
