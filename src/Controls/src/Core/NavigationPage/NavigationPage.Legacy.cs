@@ -229,6 +229,11 @@ namespace Microsoft.Maui.Controls
 				RootPage = page;
 
 			CurrentPage = page;
+
+			// Fire appearing event for the newly pushed page only if NavigationPage has appeared
+			// This ensures proper appearing event timing and prevents double appearing events
+			if (HasAppeared)
+				page?.SendAppearing();
 		}
 
 		void RemovePage(Page page)

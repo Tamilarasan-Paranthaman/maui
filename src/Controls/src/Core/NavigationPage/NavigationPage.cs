@@ -529,8 +529,9 @@ namespace Microsoft.Maui.Controls
 			if (oldValue is Page oldPage)
 				oldPage.SendDisappearing();
 
-			if (newValue is Page newPage && ((NavigationPage)bindable).HasAppeared)
-				newPage.SendAppearing();
+			// Don't automatically send appearing events here to prevent double appearing events
+			// The FireAppearing method is called explicitly in navigation operations
+			// This prevents timing issues where appearing events fire on wrong pages during pop/push cycles
 		}
 
 		internal IToolbar FindMyToolbar()
@@ -813,7 +814,9 @@ namespace Microsoft.Maui.Controls
 					},
 					() =>
 					{
-						Owner.FireAppearing(newCurrentPage);
+						// PopAsync returns to existing page, need to fire appearing event
+						if (newCurrentPage != null && ((NavigationPage)Owner).HasAppeared)
+							newCurrentPage.SendAppearing();
 					},
 					() =>
 					{
@@ -850,7 +853,9 @@ namespace Microsoft.Maui.Controls
 					},
 					() =>
 					{
-						Owner.FireAppearing(newPage);
+						// PopToRoot returns to existing root page, need to fire appearing event
+						if (newPage != null && ((NavigationPage)Owner).HasAppeared)
+							newPage.SendAppearing();
 					},
 					() =>
 					{
@@ -877,7 +882,6 @@ namespace Microsoft.Maui.Controls
 					() =>
 					{
 						Owner.FireDisappearing(previousPage);
-						Owner.FireAppearing(root);
 					},
 					() =>
 					{
