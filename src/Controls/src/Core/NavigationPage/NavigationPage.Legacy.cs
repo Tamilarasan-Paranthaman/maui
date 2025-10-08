@@ -155,7 +155,6 @@ namespace Microsoft.Maui.Controls
 			var previousPage = CurrentPage;
 			SendNavigating();
 			FireDisappearing(CurrentPage);
-			FireAppearing((Page)InternalChildren[0]);
 
 			Element[] childrenToRemove = InternalChildren.Skip(1).ToArray();
 			foreach (Element child in childrenToRemove)
@@ -164,6 +163,13 @@ namespace Microsoft.Maui.Controls
 			}
 
 			CurrentPage = RootPage;
+
+			// Fire appearing event for root page only after setting CurrentPage
+			// This prevents double appearing events and ensures proper timing
+			if (HasAppeared && RootPage is not null)
+			{
+				RootPage.SendAppearing();
+			}
 
 			var args = new NavigationRequestedEventArgs(RootPage, animated);
 
@@ -188,7 +194,6 @@ namespace Microsoft.Maui.Controls
 			var previousPage = CurrentPage;
 			SendNavigating();
 			FireDisappearing(CurrentPage);
-			FireAppearing(page);
 
 			PushPage(page);
 
