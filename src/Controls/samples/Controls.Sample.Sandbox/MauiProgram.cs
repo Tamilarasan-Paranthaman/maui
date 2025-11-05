@@ -2,9 +2,10 @@
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp() =>
-		MauiApp
-			.CreateBuilder()
+	public static MauiApp CreateMauiApp()
+	{
+		var builder = MauiApp.CreateBuilder();
+		builder
 #if __ANDROID__ || __IOS__
 			.UseMauiMaps()
 #endif
@@ -21,6 +22,13 @@ public static class MauiProgram
 				fonts.AddFont("SegoeUI-Bold.ttf", "Segoe UI Bold");
 				fonts.AddFont("SegoeUI-Italic.ttf", "Segoe UI Italic");
 				fonts.AddFont("SegoeUI-Bold-Italic.ttf", "Segoe UI Bold Italic");
-			})
-			.Build();
+			});
+
+#if ANDROID
+		// Add the status bar color mapping
+		Microsoft.Maui.Handlers.ToolbarHandler.Mapper.AppendToMapping("StatusBarColor", Platform.ToolbarExtensions.MapStatusBarColor);
+#endif
+
+		return builder.Build();
+	}
 }
