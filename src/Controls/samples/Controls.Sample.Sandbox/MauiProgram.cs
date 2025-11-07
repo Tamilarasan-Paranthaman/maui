@@ -25,8 +25,8 @@ public static class MauiProgram
 			});
 
 #if ANDROID
-		// Add the status bar color mapping
-		Microsoft.Maui.Handlers.ToolbarHandler.Mapper.AppendToMapping("StatusBarColor", Platform.ToolbarExtensions.MapStatusBarColor);
+		// Add the status bar and navigation bar color mapping
+		Microsoft.Maui.Handlers.ToolbarHandler.Mapper.AppendToMapping("SystemBarColor", Platform.ToolbarExtensions.MapSystemBarColor);
 #endif
 
 		return builder.Build();
