@@ -1,5 +1,124 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Maui.Controls.Sample.MainPage"
+             Title="MAUI Home Page"
              xmlns:local="clr-namespace:Maui.Controls.Sample">
+        <ScrollView>
+                <VerticalStackLayout Padding="30,0"
+                                     Spacing="25">
+                        <Image Source="dotnet_bot.png"
+                               HeightRequest="185"
+                               Aspect="AspectFit"
+                               SemanticProperties.Description="dot net bot in a hovercraft number nine"/>
+
+                        <Label Text="Hello, World!"
+                               Style="{StaticResource Headline}"
+                               SemanticProperties.HeadingLevel="Level1"/>
+
+                        <Label Text="Welcome to &#10;.NET Multi-platform App UI"
+                               Style="{StaticResource SubHeadline}"
+                               SemanticProperties.HeadingLevel="Level2"
+                               SemanticProperties.Description="Welcome to dot net Multi platform App UI"/>
+
+                        <Button x:Name="aboutMauiButton"
+                                Text="Click me to know about .NET MAUI"
+                                Clicked="OnAboutButtonClicked"
+                                HorizontalOptions="Fill"/>
+                        <ContentView  HeightRequest="80"
+                                      BackgroundColor="DodgerBlue"
+                                      Padding="10">
+                                <Label Text="VerticalStackLayout - Arranges children vertically"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center">
+                                </Label>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="ForestGreen"
+                                     Padding="10">
+                                <Label Text="Button Controls - Interactive UI elements"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center">
+                                </Label>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="Crimson"
+                                     Padding="10">
+                                <Label Text="Entry &amp; Editor - Text input controls"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center">
+                                </Label>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="Orange"
+                                     Padding="10">
+                                <Label Text="Image &amp; ImageButton - Display and interact with images"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"/>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="BlueViolet"
+                                     Padding="10">
+                                <Label Text="CollectionView - Display data collections efficiently"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"/>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="DeepPink"
+                                     Padding="10">
+                                <Label Text="Navigation - Shell, NavigationPage, and routing"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"/>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="DarkTurquoise"
+                                     Padding="10">
+                                <Label Text="Data Binding - Connect UI to ViewModels"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"/>
+                        </ContentView>
+
+                        <ContentView HeightRequest="80"
+                                     BackgroundColor="MediumOrchid"
+                                     Padding="10">
+                                <Label Text="Platform Features - Handlers, Essentials, and native APIs"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"/>
+                        </ContentView>
+
+                        <Border Stroke="DarkSlateGray"
+                                StrokeThickness="2"
+                                BackgroundColor="LightGray"
+                                Padding="5"
+                                StrokeShape="RoundRectangle 8">
+                                <Entry Placeholder="Enter text here"
+                                       BackgroundColor="White"
+                                       TextColor="Black"
+                                       PlaceholderColor="Gray"
+                                       SemanticProperties.Hint="Input field for user text"
+                                       HorizontalOptions="Fill"/>
+                        </Border>
+                </VerticalStackLayout>
+        </ScrollView>
 </ContentPage>
