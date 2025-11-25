@@ -36,21 +36,28 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			_itemTemplate = itemTemplate;
 			_container = container;
 			_mauiContext = mauiContext;
+
 			if (itemHeight.HasValue)
+			{
 				_itemHeight = itemHeight.Value;
+			}
 
 			if (itemWidth.HasValue)
+			{
 				_itemWidth = itemWidth.Value;
+			}
 
 			if (itemSpacing.HasValue)
+			{
 				_itemSpacing = itemSpacing.Value;
+			}
 
-			for (int n = 0; n < itemsSource.Count; n++)
+			for (int index = 0; index < itemsSource.Count; index++)
 			{
 				// We're using this as a source for a ListViewBase, and we need INCC to work. So ListViewBase is going
 				// to iterate over the entire source list right off the bat, no matter what we do. Creating one
 				// ItemTemplateContext per item in the collection is unavoidable. Luckily, ITC is pretty cheap.
-				Add(new ItemTemplateContext2(itemTemplate, itemsSource[n], container, _itemHeight, _itemWidth, _itemSpacing,
+				Add(new ItemTemplateContext2(itemTemplate, itemsSource[index], container, _itemHeight, _itemWidth, _itemSpacing,
 					false, false, _mauiContext));
 			}
 
@@ -98,9 +105,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			var count = args.NewItems.Count;
 
-			for (int n = 0; n < count; n++)
+			for (int index = 0; index < count; index++)
 			{
-				var newItem = (ItemTemplateContext2)args.NewItems[n];
+				var newItem = (ItemTemplateContext2)args.NewItems[index];
 				_itemsSource.Insert(startIndex, newItem.Item);
 			}
 		}
@@ -117,9 +124,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			var count = args.OldItems.Count;
 
-			for (int n = startIndex + count - 1; n >= startIndex; n--)
+			for (int index = startIndex + count - 1; index >= startIndex; index--)
 			{
-				_itemsSource.RemoveAt(n);
+				_itemsSource.RemoveAt(index);
 			}
 		}
 
@@ -165,9 +172,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			var count = args.NewItems.Count;
 
-			for (int n = 0; n < count; n++)
+			for (int index = 0; index < count; index++)
 			{
-				Insert(startIndex, new ItemTemplateContext2(_itemTemplate, args.NewItems[n], _container, _itemHeight, _itemWidth, _itemSpacing, 
+				Insert(startIndex, new ItemTemplateContext2(_itemTemplate, args.NewItems[index], _container, _itemHeight, _itemWidth, _itemSpacing, 
 					false, false, _mauiContext));
 			}
 		}
@@ -178,17 +185,17 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			if (args.OldStartingIndex > args.NewStartingIndex)
 			{
-				for (int n = 0; n < count; n++)
+				for (int index = 0; index < count; index++)
 				{
-					Move(args.OldStartingIndex + n, args.NewStartingIndex + n);
+					Move(args.OldStartingIndex + index, args.NewStartingIndex + index);
 				}
 
 				return;
 			}
 
-			for (int n = count - 1; n >= 0; n--)
+			for (int index = count - 1; index >= 0; index--)
 			{
-				Move(args.OldStartingIndex + n, args.NewStartingIndex + n);
+				Move(args.OldStartingIndex + index, args.NewStartingIndex + index);
 			}
 		}
 
@@ -206,9 +213,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			var count = args.OldItems.Count;
 
-			for (int n = startIndex + count - 1; n >= startIndex; n--)
+			for (int index = startIndex + count - 1; index >= startIndex; index--)
 			{
-				RemoveAt(n);
+				RemoveAt(index);
 			}
 		}
 
@@ -218,14 +225,14 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			if (newItemCount == args.OldItems.Count)
 			{
-				for (int n = 0; n < newItemCount; n++)
+				for (int index = 0; index < newItemCount; index++)
 				{
-					var index = args.OldStartingIndex + n;
-					var oldItem = this[index];
-					var newItem = new ItemTemplateContext2(_itemTemplate, args.NewItems[n], _container, _itemHeight, _itemWidth, _itemSpacing, 
+					var itemIndex = args.OldStartingIndex + index;
+					var oldItem = this[itemIndex];
+					var newItem = new ItemTemplateContext2(_itemTemplate, args.NewItems[index], _container, _itemHeight, _itemWidth, _itemSpacing, 
 						false, false, _mauiContext);
-					Items[index] = newItem;
-					var update = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, index);
+					Items[itemIndex] = newItem;
+					var update = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, itemIndex);
 					OnCollectionChanged(update);
 				}
 			}
@@ -240,9 +247,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		void Reset()
 		{
 			Items.Clear();
-			for (int n = 0; n < _itemsSource.Count; n++)
+			for (int index = 0; index < _itemsSource.Count; index++)
 			{
-				Items.Add(new ItemTemplateContext2(_itemTemplate, _itemsSource[n], _container, _itemHeight, _itemWidth, _itemSpacing,
+				Items.Add(new ItemTemplateContext2(_itemTemplate, _itemsSource[index], _container, _itemHeight, _itemWidth, _itemSpacing,
 					false, false, _mauiContext));
 			}
 

@@ -61,7 +61,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			base.ConnectHandler(platformView);
 
 			ItemsView.SelectionChanged += VirtualSelectionChanged;
-			if (PlatformView != null)
+			if (PlatformView is not null)
 			{
 				PlatformView.SetBinding(WItemsView.SelectionModeProperty,
 						new Microsoft.UI.Xaml.Data.Binding
@@ -80,13 +80,13 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		{
 			var oldListViewBase = platformView;
 
-			if (oldListViewBase != null)
+			if (oldListViewBase is not null)
 			{
 				oldListViewBase.ClearValue(WItemsView.SelectionModeProperty);
 				oldListViewBase.SelectionChanged -= PlatformSelectionChanged;
 			}
 
-			if (ItemsView != null)
+			if (ItemsView is not null)
 			{
 				ItemsView.SelectionChanged -= VirtualSelectionChanged;
 			}
@@ -116,7 +116,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		void UpdateVirtualSelection()
 		{
-			if (_ignorePlatformSelectionChange || ItemsView == null)
+			if (_ignorePlatformSelectionChange || ItemsView is null)
 			{
 				return;
 			}
@@ -152,7 +152,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 				? itemPair.Item
 				: PlatformView.SelectedItem;
 
-			if (ItemsView != null)
+			if (ItemsView is not null)
 			{
 				ItemsView.SelectionChanged -= VirtualSelectionChanged;
 				ItemsView.SelectedItem = selectedItem;
@@ -166,9 +166,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			ItemsView.SelectionChanged -= VirtualSelectionChanged;
 
 			var selection = new List<object>();
-			for (int n = 0; n < PlatformView.SelectedItems.Count; n++)
+			for (int index = 0; index < PlatformView.SelectedItems.Count; index++)
 			{
-				var item = PlatformView.SelectedItems[n];
+				var item = PlatformView.SelectedItems[index];
 				selection.Add(item is ItemTemplateContext2 itc ? itc.Item : item);
 			}
 
@@ -181,17 +181,20 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			_ignorePlatformSelectionChange = true;
 
 			var itemList = PlatformView.ItemsSource as ICollectionView;
+
 			if (itemList is null)
+			{
 				return;
+			}
 
 			switch (PlatformView.SelectionMode)
 			{
 				case ItemsViewSelectionMode.None:
 					break;
 				case ItemsViewSelectionMode.Single:
-					if (ItemsView != null)
+					if (ItemsView is not null)
 					{
-						if (ItemsView.SelectedItem == null)
+						if (ItemsView.SelectedItem is null)
 						{
 							PlatformView.DeselectAll();
 						}
@@ -208,6 +211,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 									return item == ItemsView.SelectedItem;
 								}
 							});
+
 							if (selectedItem is not null)
 							{
 								PlatformView.Select(itemList.IndexOf(selectedItem));
@@ -218,16 +222,16 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 					break;
 				case ItemsViewSelectionMode.Multiple:
 					PlatformView.DeselectAll();
-					for (int i = 0; i < itemList.Count; i++)
+					for (int index = 0; index < itemList.Count; index++)
 					{
-						var nativeItem = itemList[i];
+						var nativeItem = itemList[index];
 						if (nativeItem is ItemTemplateContext2 itemPair && ItemsView.SelectedItems.Contains(itemPair.Item))
 						{
-							PlatformView.Select(i);
+							PlatformView.Select(index);
 						}
 						else if (ItemsView.SelectedItems.Contains(nativeItem))
 						{
-							PlatformView.Select(i);
+							PlatformView.Select(index);
 						}
 					}
 					break;
@@ -241,7 +245,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		}
 	}
 
-	class SelectionModeConvert : Microsoft.UI.Xaml.Data.IValueConverter
+	partial class SelectionModeConvert : Microsoft.UI.Xaml.Data.IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{

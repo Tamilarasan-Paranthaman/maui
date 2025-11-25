@@ -105,9 +105,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 							}
 						}
 
-						for (int n = startIndex + count - 1; n >= startIndex; n--)
+						for (int index = startIndex + count - 1; index >= startIndex; index--)
 						{
-							RemoveAt(n);
+							RemoveAt(index);
 						}
 					}
 					break;

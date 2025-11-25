@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace Microsoft.Maui.Controls.Handlers.Items2
 {
-	internal class ItemFactory(ItemsView view) : IElementFactory
+	internal partial class ItemFactory(ItemsView view) : IElementFactory
 	{
 		private readonly ItemsView _view = view;
 		private Dictionary<Microsoft.Maui.Controls.DataTemplate, List<ItemContainer>> _recyclePool = new();
@@ -98,7 +98,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		}
 	}
 
-	internal class ElementWrapper(IMauiContext context) : ContentControl
+	internal partial class ElementWrapper(IMauiContext context) : ContentControl
 	{
 		public IView VirtualView { get; private set; }
 		

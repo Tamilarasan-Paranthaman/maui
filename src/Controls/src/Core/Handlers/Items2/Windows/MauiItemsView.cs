@@ -9,7 +9,7 @@ using WVisibility = Microsoft.UI.Xaml.Visibility;
 
 namespace Microsoft.Maui.Controls.Handlers.Items2
 {
-	internal class MauiItemsView : Microsoft.UI.Xaml.Controls.ItemsView, IEmptyView
+	internal partial class MauiItemsView : Microsoft.UI.Xaml.Controls.ItemsView, IEmptyView
 	{
 		ContentControl _emptyViewContentControl;
 		FrameworkElement _emptyView;
@@ -51,7 +51,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			_emptyView = emptyView;
 			_mauiEmptyView = mauiEmptyView;
 
-			if (_emptyViewContentControl != null)
+			if (_emptyViewContentControl is not null)
 			{
 				_emptyViewContentControl.Content = emptyView;
 				UpdateEmptyViewVisibility(EmptyViewVisibility);
@@ -64,7 +64,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			_emptyViewContentControl = GetTemplateChild("EmptyViewContentControl") as ContentControl;
 
-			if (_emptyView != null)
+			if (_emptyView is not null)
 			{
 				_emptyViewContentControl.Content = _emptyView;
 				UpdateEmptyViewVisibility(EmptyViewVisibility);
@@ -73,17 +73,14 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		protected override global::Windows.Foundation.Size ArrangeOverride(global::Windows.Foundation.Size finalSize)
 		{
-			if (_mauiEmptyView != null)
-			{
-				_mauiEmptyView.Layout(new Rect(0, 0, finalSize.Width, finalSize.Height));
-			}
+			_mauiEmptyView?.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
 
 			return base.ArrangeOverride(finalSize);
 		}
 
 		void UpdateEmptyViewVisibility(WVisibility visibility)
 		{
-			if (_emptyViewContentControl == null)
+			if (_emptyViewContentControl is null)
 			{
 				return;
 			}

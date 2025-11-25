@@ -130,9 +130,9 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 				_layoutPropertyChanged ??= LayoutPropertyChanged;
 				_layoutPropertyChangedProxy = new WeakNotifyPropertyChangedProxy(Layout, _layoutPropertyChanged);
 			}
-			else if (_layoutPropertyChangedProxy is not null)
+			else
 			{
-				_layoutPropertyChangedProxy.Unsubscribe();
+				_layoutPropertyChangedProxy?.Unsubscribe();
 				_layoutPropertyChangedProxy = null;
 			}
 
@@ -145,11 +145,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		{
 			base.DisconnectHandler(platformView);
 
-			if (_layoutPropertyChangedProxy is not null)
-			{
-				_layoutPropertyChangedProxy.Unsubscribe();
-				_layoutPropertyChangedProxy = null;
-			}
+			_layoutPropertyChangedProxy?.Unsubscribe();
+			_layoutPropertyChangedProxy = null;
 
 			VirtualView.ScrollToRequested -= ScrollToRequested;
 		}
@@ -159,7 +156,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			var itemsSource = Element.ItemsSource;
 			var itemTemplate = Element.ItemTemplate;
 
-			if (itemTemplate != null)
+			if (itemTemplate is not null)
 			{
 				if (ItemsView is GroupableItemsView groupableItemsView && groupableItemsView.IsGrouped)
 				{
@@ -346,7 +343,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		void FindScrollViewer()
 		{
-			if (PlatformView.ScrollView != null)
+			if (PlatformView.ScrollView is not null)
 			{
 				OnScrollViewerFound();
 				return;
@@ -364,7 +361,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		void OnScrollViewerFound()
 		{
-			if (PlatformView.ScrollView != null)
+			if (PlatformView.ScrollView is not null)
 			{
 				PlatformView.ScrollView.ViewChanged -= ScrollViewChanged;
 				PlatformView.ScrollView.PointerWheelChanged -= PointerScrollChanged;
@@ -439,6 +436,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 				View view => RealizeEmptyView(view),
 				_ => RealizeEmptyViewTemplate(emptyView, Element.EmptyViewTemplate),
 			};
+
 			(PlatformView as IEmptyView)?.SetEmptyView(_emptyView, _mauiEmptyView);
 
 			UpdateEmptyViewVisibility();
@@ -446,7 +444,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		FrameworkElement RealizeEmptyViewTemplate(object bindingContext, DataTemplate emptyViewTemplate)
 		{
-			if (emptyViewTemplate == null)
+			if (emptyViewTemplate is null)
 			{
 				return new TextBlock
 				{
@@ -479,21 +477,27 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 			if (isEmpty)
 			{
-				if (_mauiEmptyView != null)
+				if (_mauiEmptyView is not null)
 				{
 					if (_emptyViewDisplayed)
+					{
 						ItemsView.RemoveLogicalChild(_mauiEmptyView);
+					}
 
-					if (ItemsView.EmptyViewTemplate == null)
+					if (ItemsView.EmptyViewTemplate is null)
+					{
 						ItemsView.AddLogicalChild(_mauiEmptyView);
+					}
 				}
 
-				if (_emptyView != null && PlatformView is IEmptyView emptyView)
+				if (_emptyView is not null && PlatformView is IEmptyView emptyView)
 				{
 					emptyView.EmptyViewVisibility = WVisibility.Visible;
 
 					if (PlatformView.ActualWidth >= 0 && PlatformView.ActualHeight >= 0)
-						_mauiEmptyView?.Layout(new Rect(0, 0, PlatformView.ActualWidth, PlatformView.ActualHeight));
+					{
+						_mauiEmptyView?.Arrange(new Rect(0, 0, PlatformView.ActualWidth, PlatformView.ActualHeight));
+					}
 				}
 
 				_emptyViewDisplayed = true;
@@ -502,8 +506,10 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			{
 				if (_emptyViewDisplayed)
 				{
-					if (_emptyView != null && PlatformView is IEmptyView emptyView)
+					if (_emptyView is not null && PlatformView is IEmptyView emptyView)
+					{
 						emptyView.EmptyViewVisibility = WVisibility.Collapsed;
+					}
 
 					ItemsView.RemoveLogicalChild(_mauiEmptyView);
 				}
@@ -517,13 +523,13 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			if (Element.VerticalScrollBarVisibility != ScrollBarVisibility.Default)
 			{
 				// If the value is changing to anything other than the default, record the default 
-				if (_defaultVerticalScrollVisibility == null)
+				if (_defaultVerticalScrollVisibility is null)
 				{
 					_defaultVerticalScrollVisibility = ScrollViewer.GetVerticalScrollBarVisibility(PlatformView);
 				}
 			}
 
-			if (_defaultVerticalScrollVisibility == null)
+			if (_defaultVerticalScrollVisibility is null)
 			{
 				// If the default has never been recorded, then this has never been set to anything but the 
 				// default value; there's nothing to do.
@@ -546,7 +552,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (_defaultHorizontalScrollVisibility == null)
+			if (_defaultHorizontalScrollVisibility is null)
 			{
 				_defaultHorizontalScrollVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(PlatformView);
 			}
@@ -676,13 +682,13 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		int FindItemIndex(object item)
 		{
-			for (int n = 0; n < _collectionViewSource.View.Count; n++)
+			for (int index = 0; index < _collectionViewSource.View.Count; index++)
 			{
-				if (_collectionViewSource.View[n] is ItemTemplateContext pair)
+				if (_collectionViewSource.View[index] is ItemTemplateContext pair)
 				{
 					if (pair.Item == item)
 					{
-						return n;
+						return index;
 					}
 				}
 			}
