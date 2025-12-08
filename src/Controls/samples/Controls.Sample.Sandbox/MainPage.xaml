@@ -2,4 +2,41 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Maui.Controls.Sample.MainPage"
              xmlns:local="clr-namespace:Maui.Controls.Sample">
+    <Grid BackgroundColor="Orange"
+          RowDefinitions="*, Auto">
+        <VerticalStackLayout Padding="30,10,30,0"
+                             Spacing="25">
+            <Button Clicked="OnFooterButtonClicked"
+                    Text="Show Footer"
+                    x:Name="FooterButton"/>
+            <Label Text="Click to verify UI responsiveness"/>
+            <Button x:Name="TestButton"
+                    Text=".NET 10 Test"/>
+        </VerticalStackLayout>
+
+        <!-- Custom FooterView inline -->
+        <ContentView Grid.Row="1"
+                     IsVisible="False"
+                     x:Name="FooterView"
+                     PropertyChanged="OnFooterPropertyChanged">
+            <Grid>
+                <BoxView BackgroundColor="Transparent"
+                         Opacity="1.0"
+                         VerticalOptions="Fill">
+                    <BoxView.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="0,1">
+                            <GradientStop Color="Transparent"
+                                          Offset="0.0"/>
+                            <GradientStop Color="Black"
+                                          Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+                <Button Text="I am the footer"
+                        BackgroundColor="LightGray"
+                        Padding="10"/>
+            </Grid>
+        </ContentView>
+    </Grid>
 </ContentPage>
