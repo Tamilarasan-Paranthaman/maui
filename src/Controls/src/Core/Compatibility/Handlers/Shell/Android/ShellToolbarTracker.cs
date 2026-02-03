@@ -31,6 +31,7 @@ using LP = Android.Views.ViewGroup.LayoutParams;
 using Paint = Android.Graphics.Paint;
 using R = Android.Resource;
 
+#pragma warning disable IDE0031 // Use null propagation
 namespace Microsoft.Maui.Controls.Platform.Compatibility
 {
 	public class ShellToolbarTracker : Java.Lang.Object, AView.IOnClickListener, IShellToolbarTracker, IFlyoutBehaviorObserver
@@ -102,7 +103,10 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 		{
 			get
 			{
-				if (_page?.Navigation?.NavigationStack?.Count > 1)
+				var navStackCount = _page?.Navigation?.NavigationStack?.Count ?? 0;
+				var canNavFromStack = navStackCount > 1;
+
+				if (canNavFromStack)
 					return true;
 
 				return _canNavigateBack;
@@ -279,7 +283,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
 		{
-			if (_disposed || Page == null)
+			if (_disposed || Page is null)
 				return;
 
 			if (_shell?.Toolbar is ShellToolbar &&
@@ -366,7 +370,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 		ImageSource GetFlyoutIcon(BackButtonBehavior backButtonHandler, Page page)
 		{
 			var image = backButtonHandler.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
-			if (image == null)
+			if (image is null)
 			{
 				Element item = page;
 				while (!Application.IsApplicationOrNull(item))
@@ -385,7 +389,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		protected virtual async void UpdateLeftBarButtonItem(Context context, AToolbar toolbar, DrawerLayout drawerLayout, Page page)
 		{
-			if (_drawerToggle == null)
+			if (_drawerToggle is null)
 			{
 				_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), drawerLayout, toolbar, Resource.String.nav_app_bar_open_drawer_description, R.String.Ok)
 				{
@@ -445,7 +449,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 				if (customIcon != null)
 				{
-					if (fid == null)
+					if (fid is null)
 					{
 						fid = new FlyoutIconDrawerDrawable(MauiContext.Context, tintColor, customIcon, text);
 					}
@@ -461,20 +465,22 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 				}
 			}
 
-			if (!string.IsNullOrWhiteSpace(text) && icon == null)
+			if (!string.IsNullOrWhiteSpace(text) && icon is null)
 			{
 				_flyoutIconDrawerDrawable ??= new FlyoutIconDrawerDrawable(MauiContext.Context, tintColor, null, text);
 				icon = _flyoutIconDrawerDrawable;
 			}
 
-			if (icon == null && (_flyoutBehavior == FlyoutBehavior.Flyout || CanNavigateBack))
+			if (icon is null && (_flyoutBehavior == FlyoutBehavior.Flyout || CanNavigateBack))
 			{
 				_drawerArrowDrawable ??= new DrawerArrowDrawable(context.GetThemedContext());
 				icon = _drawerArrowDrawable;
 				defaultDrawerArrowDrawable = true;
 			}
 
-			icon?.Progress = (CanNavigateBack) ? 1 : 0;
+			var canNav = CanNavigateBack;
+			var progress = canNav ? 1 : 0;
+			icon?.Progress = progress;
 
 			if (command != null || CanNavigateBack)
 			{
@@ -503,6 +509,11 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 			_drawerToggle.SyncState();
 
+			// Re-apply icon Progress AFTER SyncState since SyncState resets it to 0
+			if (icon is not null)
+			{
+				icon.Progress = progress;
+			}
 
 			//this needs to be set after SyncState
 			UpdateToolbarIconAccessibilityText(toolbar, _shell);
@@ -550,13 +561,17 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			{
 				toolbar.NavigationContentDescription = automationId;
 			}
-			else if (image == null ||
-				toolbar.SetNavigationContentDescription(image) == null)
+			else if (image is null ||
+				toolbar.SetNavigationContentDescription(image) is null)
 			{
 				if (CanNavigateBack)
+				{
 					toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_navigate_up_description);
+				}
 				else
+				{
 					toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_open_drawer_description);
+				}
 			}
 		}
 
@@ -594,7 +609,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		void UpdateNavBarHasShadow(Page page)
 		{
-			if (page == null || !_appBar.IsAlive())
+			if (page is null || !_appBar.IsAlive())
 				return;
 
 			if (Shell.GetNavBarHasShadow(page))
@@ -613,7 +628,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		void OnToolbarPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (_toolbar != null && _shell?.GetCurrentShellPage() == Page)
+			if (_toolbar is not null && _shell?.GetCurrentShellPage() == Page)
 			{
 				ApplyToolbarChanges((Toolbar)sender, (Toolbar)_toolbar);
 				UpdateToolbarIconAccessibilityText(_platformToolbar, _shell);
@@ -626,8 +641,10 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		protected virtual void UpdateTitleView(Context context, AToolbar toolbar, View titleView)
 		{
-			if (_toolbar != null && _shell?.GetCurrentShellPage() == Page)
+			if (_toolbar is not null && _shell?.GetCurrentShellPage() == Page)
+			{
 				_toolbar.Handler?.UpdateValue(nameof(Toolbar.TitleView));
+			}
 		}
 
 		private void UpdateToolbarItemsTintColors(AToolbar toolbar)
@@ -647,7 +664,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			if (SearchHandler != null && SearchHandler.SearchBoxVisibility != SearchBoxVisibility.Hidden)
 			{
 				var context = ShellContext.AndroidContext;
-				if (_searchView == null)
+				if (_searchView is null)
 				{
 					_searchView = GetSearchView(context);
 					_searchView.SearchHandler = SearchHandler;
@@ -687,6 +704,13 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			}
 			else
 			{
+				// BUG FIX: Remove the collapsible search menu item when navigating to a page without SearchHandler
+				// Previously, only _searchView was cleaned up, but the menu item remained visible
+				if (menu.FindItem(_placeholderMenuItemId) is not null)
+				{
+					menu.RemoveItem(_placeholderMenuItemId);
+				}
+
 				if (_searchView != null)
 				{
 					_searchView.View.RemoveFromParent();
