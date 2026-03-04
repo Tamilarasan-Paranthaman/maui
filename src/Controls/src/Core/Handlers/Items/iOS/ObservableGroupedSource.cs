@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using Foundation;
 using UIKit;
 
@@ -240,8 +241,17 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 				return;
 			}
 
+			// Only count items that are actual groups (ICollection); flat items like strings or model objects
+			// must not increment _groupCount or trigger InsertSections on UICollectionView
+			var count = args.NewItems.Cast<object>().Count(item => item is ICollection);
+
+			// None of the new items are groups; no section changes needed
+			if (count == 0)
+			{
+				return;
+			}
+
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _groupSource.IndexOf(args.NewItems[0]);
-			var count = args.NewItems.Count;
 			_groupCount += count;
 
 			// Adding a group will change the section index for all subsequent groups, so the easiest thing to do
@@ -270,12 +280,21 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 				return;
 			}
 
+			// Only count items that are actual groups (ICollection); flat items must not decrement
+			// _groupCount or trigger DeleteSections for sections that were never created
+			var count = args.OldItems.Cast<object>().Count(item => item is ICollection);
+
+			// None of the removed items are groups; no section changes needed
+			if (count == 0)
+			{
+				return;
+			}
+
 			// Removing a group will change the section index for all subsequent groups, so the easiest thing to do
 			// is to reset all the group tracking to get it up-to-date
 			ResetGroupTracking();
 
 			// Since we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
-			var count = args.OldItems.Count;
 			_groupCount -= count;
 
 			// Queue up the updates to the UICollectionView
@@ -413,15 +432,21 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			{
 				foreach (var group in list)
 				{
-					if (group is IEnumerable enumerable)
+					if (group is ICollection)
 					{
 						count++;
 					}
 				}
-
 				return count;
 			}
 
+			foreach (var item in _groupSource)
+			{
+				if (item is ICollection)
+				{
+					count++;
+				}
+			}
 			return count;
 		}
 	}
