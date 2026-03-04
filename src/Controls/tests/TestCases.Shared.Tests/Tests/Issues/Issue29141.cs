@@ -15,7 +15,7 @@ public class Issue29141 : _IssuesUITest
 	: base(device)
 	{ }
 
-	[Test]
+	[Test, Order(1)]
 	[Category(UITestCategories.CollectionView)]
 	public void VerifyCVGroupHFTemplateWithObservableCollection()
 	{
@@ -25,6 +25,33 @@ public class Issue29141 : _IssuesUITest
 		App.Tap("GroupFooterTemplateGrid");
 		App.WaitForNoElement("GroupHeaderTemplate");
 		App.WaitForNoElement("GroupFooterTemplate");
+	}
+
+	[Test, Order(2)]
+	[Category(UITestCategories.CollectionView)]
+	public void VerifyCVGroupHFTemplateWithStringCollection()
+	{
+		App.WaitForElement("collectionView");
+		App.Tap("SwitchToStringCollection");
+		App.Tap("IsGroupedTrue");
+		App.Tap("GroupHeaderTemplateGrid");
+		App.WaitForNoElement("GroupHeaderTemplate");
+	}
+
+	[Test, Order(3)]
+	[Category(UITestCategories.CollectionView)]
+	public void VerifyCVNoSectionCrashOnAddFlatItem()
+	{
+		App.WaitForElement("collectionView");
+		App.Tap("IsGroupedTrue");
+		App.Tap("GroupHeaderTemplateGrid");
+		App.WaitForNoElement("GroupHeaderTemplate");
+
+		// Add flat items — should not crash or produce new sections
+		App.Tap("AddItemButton");
+		App.Tap("AddItemButton");
+		App.Tap("AddItemButton");
+		App.WaitForNoElement("GroupHeaderTemplate");
 	}
 }
 #endif

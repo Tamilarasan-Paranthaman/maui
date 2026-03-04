@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using Foundation;
 using UIKit;
 
@@ -243,7 +242,14 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			// Only count items that are actual groups (ICollection); flat items like strings or model objects
 			// must not increment _groupCount or trigger InsertSections on UICollectionView
-			var count = args.NewItems.Cast<object>().Count(item => item is ICollection);
+			int count = 0;
+			foreach (var item in args.NewItems)
+			{
+				if (item is ICollection)
+				{
+					count++;
+				}
+			}
 
 			// None of the new items are groups; no section changes needed
 			if (count == 0)
@@ -282,7 +288,14 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			// Only count items that are actual groups (ICollection); flat items must not decrement
 			// _groupCount or trigger DeleteSections for sections that were never created
-			var count = args.OldItems.Cast<object>().Count(item => item is ICollection);
+			int count = 0;
+			foreach (var item in args.OldItems)
+			{
+				if (item is ICollection)
+				{
+					count++;
+				}
+			}
 
 			// None of the removed items are groups; no section changes needed
 			if (count == 0)
