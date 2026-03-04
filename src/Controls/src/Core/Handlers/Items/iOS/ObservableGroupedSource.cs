@@ -243,8 +243,10 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			// Only count items that are actual groups (ICollection); flat items like strings or model objects
 			// must not increment _groupCount or trigger InsertSections on UICollectionView
 			int count = 0;
+
 			foreach (var item in args.NewItems)
 			{
+				// Count only ICollection items — string and plain model objects are not groups
 				if (item is ICollection)
 				{
 					count++;
@@ -289,8 +291,10 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			// Only count items that are actual groups (ICollection); flat items must not decrement
 			// _groupCount or trigger DeleteSections for sections that were never created
 			int count = 0;
+
 			foreach (var item in args.OldItems)
 			{
+				// Count only ICollection items — string and plain model objects are not groups
 				if (item is ICollection)
 				{
 					count++;
