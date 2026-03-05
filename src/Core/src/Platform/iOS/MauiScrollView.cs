@@ -497,49 +497,52 @@ namespace Microsoft.Maui.Platform
 
 			contentSize = new Size(width, height);
 
-			// For Right-To-Left (RTL) layouts, we need to adjust the content arrangement and offset
-			// to ensure the content is correctly aligned and scrolled. This involves a second layout
-			// arrangement with an adjusted starting point and recalculating the content offset.
-			if (_previousEffectiveUserInterfaceLayoutDirection != EffectiveUserInterfaceLayoutDirection)
+			bool isDirectionChange = _previousEffectiveUserInterfaceLayoutDirection != EffectiveUserInterfaceLayoutDirection;
+
+			// For Right-To-Left (RTL) layouts, iOS natively handles the visual mirroring of UIScrollView
+			// content when SemanticContentAttribute is set to ForceRightToLeft. The content offset semantics
+			// are inverted: contentOffset.x = maxOffset shows the leftmost content (physical x=0),
+			// and contentOffset.x = 0 shows the rightmost content.
+			//
+			// We must NOT re-arrange content at negative coordinates because UIScrollView only allows
+			// scrolling within (0, 0) to (contentSize - boundsSize). Content placed at negative x
+			// coordinates would be outside the scrollable area and unreachable by the user.
+			//
+			// Instead, we keep the normal arrangement at (0, 0) and only set the initial ContentOffset
+			// to the maximum horizontal offset when switching to RTL, so the user sees the "start"
+			// of RTL content (leftmost physical content = rightmost visual content).
+			if (isDirectionChange)
 			{
-				// In mac platform, Scrollbar is not updated based on FlowDirection, so resetting the scroll indicators
-				// It's a native limitation; to maintain platform consistency, a hack fix is applied to show the Scrollbar based on the FlowDirection.
-				if (OperatingSystem.IsMacCatalyst() && _previousEffectiveUserInterfaceLayoutDirection is not null)
-				{
-					bool showsVertical = ShowsVerticalScrollIndicator;
-					bool showsHorizontal = ShowsHorizontalScrollIndicator;
-
-					ShowsVerticalScrollIndicator = false;
-					ShowsHorizontalScrollIndicator = false;
-
-					ShowsVerticalScrollIndicator = showsVertical;
-					ShowsHorizontalScrollIndicator = showsHorizontal;
-				}
-
 				if (EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
 				{
+					// In mac platform, Scrollbar is not updated based on FlowDirection, so resetting the scroll indicators
+					// It's a native limitation; to maintain platform consistency, a hack fix is applied to show the Scrollbar based on the FlowDirection.
+					if (OperatingSystem.IsMacCatalyst() && _previousEffectiveUserInterfaceLayoutDirection is not null)
+					{
+						bool showsVertical = ShowsVerticalScrollIndicator;
+						bool showsHorizontal = ShowsHorizontalScrollIndicator;
+
+						ShowsVerticalScrollIndicator = false;
+						ShowsHorizontalScrollIndicator = false;
+
+						ShowsVerticalScrollIndicator = showsVertical;
+						ShowsHorizontalScrollIndicator = showsHorizontal;
+					}
+
+					// Set initial scroll position to show the "start" of RTL content.
+					// In iOS RTL mode, contentOffset = maxOffset shows the leftmost physical content,
+					// which corresponds to the first child (Tab1) — the visual "start" in RTL.
 					var horizontalOffset = contentSize.Width - bounds.Width;
-
-					if (SystemAdjustedContentInset == UIEdgeInsets.Zero || ContentInsetAdjustmentBehavior == UIScrollViewContentInsetAdjustmentBehavior.Never)
-					{
-						CrossPlatformLayout?.CrossPlatformArrange(new Rect(new Point(-horizontalOffset, 0), bounds.Size.ToSize()));
-					}
-					else
-					{
-						CrossPlatformLayout?.CrossPlatformArrange(new Rect(new Point(-horizontalOffset, 0), bounds.Size.ToSize()));
-					}
-
 					ContentOffset = new CGPoint(horizontalOffset, 0);
-
 				}
 				else if (_previousEffectiveUserInterfaceLayoutDirection is not null)
 				{
+					// Switching from RTL back to LTR - reset horizontal offset
 					ContentOffset = new CGPoint(0, ContentOffset.Y);
 				}
 			}
 
-			// When switching between LTR and RTL, we need to re-arrange and offset content exactly once
-			// to avoid cumulative shifts or incorrect offsets on subsequent layouts.
+			// Track the current direction so we can detect future changes.
 			_previousEffectiveUserInterfaceLayoutDirection = EffectiveUserInterfaceLayoutDirection;
 
 			return contentSize;
