@@ -266,6 +266,12 @@ The repository includes specialized custom agents and reusable skills for specif
    - **Output**: Applied changes to instruction files, skills, architecture docs, code comments
    - **Do NOT use for**: Analysis only without applying changes → Use `/learn-from-pr` skill instead
 
+5. **cherry-pick** - Applies commits from GitHub commit URLs onto the current branch using the patch-based approach
+   - **Use when**: User shares a GitHub commit link and wants to apply it to their current branch
+   - **Capabilities**: Downloads commit patches from GitHub, applies them preserving author/date/message, handles conflicts, supports multiple commits
+   - **Trigger phrases**: "cherry-pick this commit", "apply this commit", "pick this change", or simply sharing a GitHub commit URL
+   - **Do NOT use for**: Merging entire branches, reverting commits, or PR review
+
 ### Reusable Skills
 
 Skills are modular capabilities that can be invoked directly or used by agents. Located in `.github/skills/`:
@@ -340,6 +346,7 @@ Skills are modular capabilities that can be invoked directly or used by agents. 
 - User: "Test this PR" → Immediately invoke **sandbox-agent**
 - User: "Fix issue #67890" (no PR exists) → Suggest using `/delegate` command
 - User: "Write tests for issue #12345" → Immediately invoke **write-tests-agent**
+- User shares a GitHub commit URL → Immediately invoke **cherry-pick** agent
 
 **When NOT to delegate**:
 - User asks "What does PR #12345 do?" → Informational query, handle yourself
