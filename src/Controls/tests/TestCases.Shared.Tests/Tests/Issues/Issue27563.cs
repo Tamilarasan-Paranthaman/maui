@@ -17,6 +17,7 @@ namespace Microsoft.Maui.TestCases.Tests.Issues
 		public void VerifyCarouselViewIndicatorPositionWithoutLooping()
 		{
 			App.WaitForElement("carouselview");
+			App.WaitForElement("Remain View");
 
 			App.Tap("ScrollToSecondButton");
 			App.WaitForElement("Actual View");
