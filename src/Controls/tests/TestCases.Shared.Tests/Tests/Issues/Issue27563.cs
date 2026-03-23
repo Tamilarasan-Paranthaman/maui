@@ -1,6 +1,3 @@
-﻿#if TEST_FAILS_ON_WINDOWS && TEST_FAILS_ON_CATALYST
-// On Catalyst, Swipe actions not supported in Appium.
-// On Windows, TimeoutException is thrown when enabling the Loop. Refer issue: https://github.com/dotnet/maui/issues/29245
 using NUnit.Framework;
 using UITest.Appium;
 using UITest.Core;
@@ -17,16 +14,18 @@ namespace Microsoft.Maui.TestCases.Tests.Issues
 
 		[Test]
 		[Category(UITestCategories.CarouselView)]
-		public void VerifyCarouselViewScrolling()
+		public void VerifyCarouselViewIndicatorPositionWithoutLooping()
 		{
 			App.WaitForElement("carouselview");
-			App.SwipeRightToLeft("carouselview");
+
+			App.Tap("ScrollToSecondButton");
 			App.WaitForElement("Actual View");
 
 			App.Tap("PositionButton");
+			App.WaitForElement("Percentage View");
 
-			VerifyScreenshot();
+			App.Tap("PingButton");
+			App.WaitForElement("Ping:1");
 		}
 	}
 }
-#endif
