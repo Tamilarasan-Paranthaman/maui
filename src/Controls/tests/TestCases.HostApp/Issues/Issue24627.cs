@@ -1,6 +1,6 @@
 ﻿namespace Maui.Controls.Sample.Issues;
 
-[Issue(IssueTracker.Github, 24627, "[Windows] TitleBar Title FontAttributes", PlatformAffected.UWP)]
+[Issue(IssueTracker.Github, 24627, "[Windows] TitleBar Title FontAttributes", PlatformAffected.UWP | PlatformAffected.macOS)]
 public class Issue24627 : ContentPage
 {
 	TitleBar customTitleBar;
