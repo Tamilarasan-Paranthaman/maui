@@ -419,12 +419,14 @@ namespace Microsoft.Maui.Controls.Platform
 				{
 					contentPanel.IsTabStop = true;
 					contentPanel.KeyDown += ContentPanelOnKeyDown;
+					contentPanel.KeyboardActivate = () => FireKeyboardTap();
 					_subscriptionFlags |= SubscriptionFlags.ContentPanelKeyDownSubscribed;
 				}
 				else if (!canAllowTabStop && isSubscribed)
 				{
 					contentPanel.IsTabStop = false;
 					contentPanel.KeyDown -= ContentPanelOnKeyDown;
+					contentPanel.KeyboardActivate = null;
 					_subscriptionFlags &= ~SubscriptionFlags.ContentPanelKeyDownSubscribed;
 				}
 			}
@@ -436,31 +438,38 @@ namespace Microsoft.Maui.Controls.Platform
 		{
 			if (e.Key == VirtualKey.Enter || e.Key == VirtualKey.Space)
 			{
-				if (Element is View view)
-				{
-					IEnumerable<TapGestureRecognizer> tapGestures = view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer =>
-						recognizer.NumberOfTapsRequired == 1 &&
-						(recognizer.Buttons & ButtonsMask.Primary) == ButtonsMask.Primary);
-
-					bool handled = false;
-
-					foreach (var recognizer in tapGestures)
-					{
-						recognizer.SendTapped(view, (relativeTo) =>
-						{
-							// Keyboard taps have no physical position, use Point.Zero
-							// consistent with Android keyboard behavior.
-							return Point.Zero;
-						});
-						handled = true;
-					}
-
-					if (handled)
-					{
-						e.Handled = true;
-					}
-				}
+				if (FireKeyboardTap())
+					e.Handled = true;
 			}
+		}
+
+		// Fires all primary single-tap TapGestureRecognizers on the Border element.
+		// Shared by ContentPanelOnKeyDown (keyboard path) and MauiBorderAutomationPeer.IInvokeProvider.Invoke() (UIA path).
+		bool FireKeyboardTap()
+		{
+			if (Element is View view)
+			{
+				IEnumerable<TapGestureRecognizer> tapGestures = view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer =>
+					recognizer.NumberOfTapsRequired == 1 &&
+					(recognizer.Buttons & ButtonsMask.Primary) == ButtonsMask.Primary);
+
+				bool handled = false;
+
+				foreach (var recognizer in tapGestures)
+				{
+					recognizer.SendTapped(view, (relativeTo) =>
+					{
+						// Keyboard/UIA taps have no physical position, use Point.Zero
+						// consistent with Android keyboard behavior.
+						return Point.Zero;
+					});
+					handled = true;
+				}
+
+				return handled;
+			}
+
+			return false;
 		}
 
 		protected virtual void Dispose(bool disposing)

@@ -21,6 +21,9 @@ namespace Microsoft.Maui.Platform
 		IBorderStroke? _borderStroke;
 		FrameworkElement? _content;
 
+		// Set by GesturePlatformManager when tap gestures are active; called by MauiBorderAutomationPeer.IInvokeProvider.Invoke().
+		internal Action? KeyboardActivate;
+
 		internal Path? BorderPath => _borderPath;
 		internal IBorderStroke? BorderStroke => _borderStroke;
 		internal FrameworkElement? Content

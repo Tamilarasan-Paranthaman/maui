@@ -6,6 +6,8 @@ using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml.Automation.Peers;
+using Microsoft.UI.Xaml.Automation.Provider;
 using Microsoft.UI.Xaml.Hosting;
 using Xunit;
 
@@ -106,6 +108,39 @@ namespace Microsoft.Maui.DeviceTests
 				var contentPanel = GetNativeBorder(handler as BorderHandler);
 				Assert.Equal(hasTapGestureRecognizer, contentPanel.IsTabStop);
 			});
+		}
+
+		[Fact(DisplayName = "Border IInvokeProvider.Invoke fires TapGestureRecognizer")]
+		public async Task ContentPanelKeyboardActivationFiresTapGestureRecognizer()
+		{
+			SetupBuilder();
+
+			var tappedCount = 0;
+			var tapRecognizer = new TapGestureRecognizer();
+			tapRecognizer.Tapped += (_, _) => tappedCount++;
+
+			var border = new Border()
+			{
+				Content = new Label { Text = "Focusable Border" },
+				StrokeShape = new Rectangle(),
+				WidthRequest = 300,
+				HeightRequest = 100
+			};
+
+			border.GestureRecognizers.Add(tapRecognizer);
+
+			await AttachAndRun(border, handler =>
+			{
+				var contentPanel = GetNativeBorder(handler as BorderHandler);
+				Assert.True(contentPanel.IsTabStop);
+
+				var peer = new MauiBorderAutomationPeer(contentPanel);
+				var ip = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+				Assert.NotNull(ip);
+				ip.Invoke();
+			});
+
+			Assert.Equal(1, tappedCount);
 		}
 
 		ContentPanel GetNativeBorder(BorderHandler borderHandler) =>
