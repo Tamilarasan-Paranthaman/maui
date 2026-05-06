@@ -2,4 +2,147 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Maui.Controls.Sample.MainPage"
              xmlns:local="clr-namespace:Maui.Controls.Sample">
+        <ScrollView>
+                <VerticalStackLayout
+                        Padding="30,0"
+                        Spacing="15">
+
+                        <Label
+                                Text="Menu Bar Item Controls"
+                                SemanticProperties.HeadingLevel="Level1"
+                                Margin="0,20,0,20"/>
+
+                        <!-- File Menu Controls -->
+                        <Border Padding="15"
+                                Stroke="LightGray">
+                                <VerticalStackLayout Spacing="10">
+                                        <Label Text="File Menu"
+                                               FontSize="18"
+                                               FontAttributes="Bold"/>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="FileMenuSwitch"
+                                                        IsToggled="True"
+                                                        Toggled="OnFileMenuToggled"/>
+                                                <Label Text="Enable File Menu"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="ExitItemSwitch"
+                                                        IsToggled="True"
+                                                        Toggled="OnExitItemToggled"/>
+                                                <Label Text="Enable Exit Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Locations Menu Controls -->
+                        <Border Padding="15"
+                                Stroke="LightGray">
+                                <VerticalStackLayout Spacing="10">
+                                        <Label Text="Locations Menu"
+                                               FontSize="18"
+                                               FontAttributes="Bold"/>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="LocationsMenuSwitch"
+                                                        IsToggled="True"
+                                                        Toggled="OnLocationsMenuToggled"/>
+                                                <Label Text="Enable Locations Menu"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="ChangeLocationSubItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnChangeLocationSubItemToggled"/>
+                                                <Label Text="Enable Change Location Submenu"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="AddLocationItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnAddLocationItemToggled"/>
+                                                <Label Text="Enable Add Location Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="EditLocationItemSwitch"
+                                                        IsToggled="True"
+                                                        Toggled="OnEditLocationItemToggled"/>
+                                                <Label Text="Enable Edit Location Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="RemoveLocationItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnRemoveLocationItemToggled"/>
+                                                <Label Text="Enable Remove Location Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                        </Border>
+
+                        <!-- View Menu Controls -->
+                        <Border Padding="15"
+                                Stroke="LightGray">
+                                <VerticalStackLayout Spacing="10">
+                                        <Label Text="View Menu"
+                                               FontSize="18"
+                                               FontAttributes="Bold"/>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="ViewMenuSwitch"
+                                                        IsToggled="True"
+                                                        Toggled="OnViewMenuToggled"/>
+                                                <Label Text="Enable View Menu"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="RefreshItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnRefreshItemToggled"/>
+                                                <Label Text="Enable Refresh Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Media Menu Controls -->
+                        <Border Padding="15"
+                                Stroke="LightGray">
+                                <VerticalStackLayout Spacing="10">
+                                        <Label Text="Media Menu"
+                                               FontSize="18"
+                                               FontAttributes="Bold"/>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="MediaMenuSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnMediaMenuToggled"/>
+                                                <Label Text="Enable Media Menu"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="PlayItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnPlayItemToggled"/>
+                                                <Label Text="Enable Play Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="PauseItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnPauseItemToggled"/>
+                                                <Label Text="Enable Pause Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Spacing="10">
+                                                <Switch x:Name="StopItemSwitch"
+                                                        IsToggled="False"
+                                                        Toggled="OnStopItemToggled"/>
+                                                <Label Text="Enable Stop Item"
+                                                       VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                        </Border>
+
+                </VerticalStackLayout>
+        </ScrollView>
 </ContentPage>

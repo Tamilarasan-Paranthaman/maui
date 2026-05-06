@@ -4,19 +4,97 @@
     x:Class="Maui.Controls.Sample.SandboxShell"
     xmlns:local="clr-namespace:Maui.Controls.Sample"
     x:Name="shell">
-    <TabBar Shell.TabBarForegroundColor="Green"
-        Shell.TabBarUnselectedColor="Red">
-        <Tab Title="MainPage1" Icon="groceries.png">
-            <ShellContent Icon="groceries.png"
-            Title="Home"
-            ContentTemplate="{DataTemplate local:MainPage}"
-            Route="MainPage" />
-        </Tab>
-        <Tab Title="MainPage2" Icon="dotnet_bot.png">
-            <ShellContent Icon="dotnet_bot.png"
-            Title="Home"
-            ContentTemplate="{DataTemplate local:MainPage}"
-            Route="MainPage2" />
-        </Tab>
-    </TabBar>
+    <Shell.MenuBarItems>
+        <MenuBarItem Text="{Binding FileMenuText}"
+                     IsEnabled="{Binding FileMenuEnabled}">
+            <MenuFlyoutItem Text="{Binding ExitText}"
+                            IsEnabled="{Binding ExitEnabled}"
+                            IconImageSource="{Binding ExitIcon}"
+                            Command="{Binding ExitCommand}"
+                            AutomationId="ExitMenuFlyoutItem"/>
+        </MenuBarItem>
+
+        <MenuBarItem Text="{Binding LocationsMenuText}"
+                x:Name="locationsMenuBarItem"
+                     IsEnabled="True"
+                     AutomationId="LocationsMenuBarItem">
+            <MenuFlyoutSubItem x:Name="ChangeLocationSubItem"
+                               IsEnabled="{Binding ChangeLocationEnabled}"
+                               Text="{Binding ChangeLocationText}"
+                               AutomationId="ChangeLocationMenuFlyoutSubItem">
+
+                <MenuFlyoutItem Text="Location 1"/>
+
+                <MenuFlyoutItem Text="Location 2"/>
+
+                <MenuFlyoutItem Text="Location 3"/>
+
+            </MenuFlyoutSubItem>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="{Binding AddLocationText}"
+                            IsEnabled="{Binding AddLocationEnabled}"
+                            Command="{Binding AddLocationCommand}"
+                            AutomationId="AddLocationMenuFlyoutItem"/>
+            <MenuFlyoutItem Text="{Binding EditLocationText}"
+                            IsEnabled="{Binding EditLocationEnabled}"
+                            Command="{Binding EditLocationCommand}"
+                            AutomationId="EditLocationMenuFlyoutItem"/>
+            <MenuFlyoutItem Text="{Binding RemoveLocationText}"
+                            IsEnabled="{Binding RemoveLocationEnabled}"
+                            Command="{Binding RemoveLocationCommand}"
+                            AutomationId="RemoveLocationMenuFlyoutItem"/>
+        </MenuBarItem>
+
+        <MenuBarItem Text="{Binding ViewMenuText}"
+                     IsEnabled="{Binding ViewMenuEnabled}">
+            <MenuFlyoutItem Text="{Binding RefreshText}"
+                            IsEnabled="{Binding RefreshEnabled}"
+                            IconImageSource="{Binding RefreshIcon}"
+                            Command="{Binding RefreshCommand}"
+                            AutomationId="RefreshMenuFlyoutItem"/>
+        </MenuBarItem>
+
+        <MenuBarItem Text="MediaMenuBar"
+                x:Name="mediaMenuBarItem"
+                     IsEnabled="{Binding MediaMenuEnabled}">
+            <MenuFlyoutItem Text="Play"
+                            IsEnabled="{Binding PlayEnabled}"
+                            AutomationId="PlayMenuFlyoutItem">
+                <MenuFlyoutItem.IconImageSource>
+                    <FontImageSource Glyph="&#x25B6;"
+                                     FontFamily="Arial"/>
+                </MenuFlyoutItem.IconImageSource>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="Pause"
+                            IsEnabled="{Binding PauseEnabled}"
+                            AutomationId="PauseMenuFlyoutItem">
+                <MenuFlyoutItem.IconImageSource>
+                    <FontImageSource Glyph="&#x23F8;"
+                                     FontFamily="Arial"/>
+                </MenuFlyoutItem.IconImageSource>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="Stop"
+                            IsEnabled="{Binding StopEnabled}"
+                    x:Name="check"
+                            AutomationId="StopMenuFlyoutItem">
+                <MenuFlyoutItem.IconImageSource>
+                    <FontImageSource Glyph="&#x23F9;"
+                                     FontFamily="Arial"/>
+                </MenuFlyoutItem.IconImageSource>
+            </MenuFlyoutItem>
+        </MenuBarItem>
+    </Shell.MenuBarItems>
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage"/>
+    <ShellContent>
+        <ContentPage>
+            <VerticalStackLayout>
+                <Button Text="Toggle ChangeLocationSubItem"
+                        Clicked="Button_Clicked"/>
+            </VerticalStackLayout>
+        </ContentPage>
+    </ShellContent>
 </Shell>
