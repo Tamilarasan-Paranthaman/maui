@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ValidateXcodeVersion>false</ValidateXcodeVersion>
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);XC0022</NoWarn>
     <!-- Disable multi-RID builds to workaround a parallel build issue -->

@@ -1,3 +1,110 @@
-﻿<ContentPage x:Class="Maui.Controls.Sample.MainPage"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Maui.Controls.Sample.MainPage"
              xmlns:local="clr-namespace:Maui.Controls.Sample">
+
+        <Grid>
+                <!-- Main content -->
+                <ScrollView>
+                        <VerticalStackLayout Spacing="15"
+                                             Padding="20">
+                                <Label Text="FAB Phase 8 Tests"
+                                       FontSize="24"
+                                       FontAttributes="Bold"/>
+                                <Label x:Name="StatusLabel"
+                                       Text="Tap buttons to test"
+                                       FontSize="16"
+                                       TextColor="Gray"/>
+
+                                <!-- Test 1: Show/Hide Animations -->
+                                <Label Text="1. Show / Hide Animations"
+                                       FontSize="18"
+                                       FontAttributes="Bold"/>
+                                <HorizontalStackLayout Spacing="10">
+                                        <Button Text="Hide FAB"
+                                                Clicked="OnHideFab"
+                                                BackgroundColor="#B00020"
+                                                TextColor="White"/>
+                                        <Button Text="Show FAB"
+                                                Clicked="OnShowFab"
+                                                BackgroundColor="#03DAC5"
+                                                TextColor="Black"/>
+                                </HorizontalStackLayout>
+
+                                <!-- Test 2: Toggle Extended -->
+                                <Label Text="2. Toggle Extended (Icon+Text)"
+                                       FontSize="18"
+                                       FontAttributes="Bold"/>
+                                <Button Text="Toggle Extended"
+                                        Clicked="OnToggleExtended"
+                                        BackgroundColor="#6200EE"
+                                        TextColor="White"/>
+
+                                <!-- Test 3: Size Switching -->
+                                <Label Text="3. Switch Size"
+                                       FontSize="18"
+                                       FontAttributes="Bold"/>
+                                <HorizontalStackLayout Spacing="10">
+                                        <Button Text="Normal"
+                                                Clicked="OnSetNormal"/>
+                                        <Button Text="Mini"
+                                                Clicked="OnSetMini"/>
+                                </HorizontalStackLayout>
+
+                                <!-- Test 4: Dynamic Properties -->
+                                <Label Text="4. Change Color / Elevation"
+                                       FontSize="18"
+                                       FontAttributes="Bold"/>
+                                <HorizontalStackLayout Spacing="10">
+                                        <Button Text="Red"
+                                                Clicked="OnSetRed"
+                                                BackgroundColor="Red"
+                                                TextColor="White"/>
+                                        <Button Text="Purple"
+                                                Clicked="OnSetPurple"
+                                                BackgroundColor="#6200EE"
+                                                TextColor="White"/>
+                                        <Button Text="Green"
+                                                Clicked="OnSetGreen"
+                                                BackgroundColor="Green"
+                                                TextColor="White"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="10">
+                                        <Button Text="Elevation 0"
+                                                Clicked="OnElevation0"/>
+                                        <Button Text="Elevation 12"
+                                                Clicked="OnElevation12"/>
+                                </HorizontalStackLayout>
+
+                                <!-- Spacer for scrolling -->
+                                <BoxView HeightRequest="100"
+                                         Color="LightBlue"
+                                         CornerRadius="8"/>
+                                <BoxView HeightRequest="100"
+                                         Color="LightGreen"
+                                         CornerRadius="8"/>
+                                <BoxView HeightRequest="100"
+                                         Color="LightCoral"
+                                         CornerRadius="8"/>
+                                <BoxView HeightRequest="100"
+                                         Color="LightPink"
+                                         CornerRadius="8"/>
+                        </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- FloatingActionButton -->
+                <FloatingActionButton
+                        x:Name="MainFab"
+                        Icon="shopping_cart.png"
+                        Text="Add Item"
+                        BackgroundColor="#6200EE"
+                        IconColor="White"
+                        Elevation="8"
+                        Size="Normal"
+                        HorizontalOptions="End"
+                        VerticalOptions="End"
+                        Margin="0,0,16,16"
+                        Clicked="OnFabClicked"/>
+        </Grid>
+
 </ContentPage>
