@@ -221,16 +221,14 @@ namespace Microsoft.Maui.Controls
 
         void OnCommandChanged()
         {
-            if (Command != null)
-                Command.CanExecuteChanged += CommandCanExecuteChanged;
+            Command?.CanExecuteChanged += CommandCanExecuteChanged;
 
             CommandCanExecuteChanged(this, EventArgs.Empty);
         }
 
         void OnCommandChanging()
         {
-            if (Command != null)
-                Command.CanExecuteChanged -= CommandCanExecuteChanged;
+            Command?.CanExecuteChanged -= CommandCanExecuteChanged;
         }
 
         void CommandCanExecuteChanged(object sender, EventArgs e)

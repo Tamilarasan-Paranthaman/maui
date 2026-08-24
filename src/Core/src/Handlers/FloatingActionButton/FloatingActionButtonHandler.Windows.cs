@@ -6,208 +6,222 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using WThickness = Microsoft.UI.Xaml.Thickness;
+using WCornerRadius = Microsoft.UI.Xaml.CornerRadius;
+using WVisibility = Microsoft.UI.Xaml.Visibility;
 
 namespace Microsoft.Maui.Handlers
 {
-    public partial class FloatingActionButtonHandler : ViewHandler<IFloatingActionButton, Button>
-    {
-        const double NormalSize = 56;
-        const double MiniSize = 40;
+	public partial class FloatingActionButtonHandler : ViewHandler<IFloatingActionButton, MauiFloatingActionButton>
+	{
+		const double NormalSize = 56;
+		const double MiniSize = 40;
 
-        readonly Image _image = new()
-        {
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            Stretch = Stretch.Uniform,
-        };
+		PointerEventHandler? _pointerPressedHandler;
+		PointerEventHandler? _pointerReleasedHandler;
+		Brush? _defaultBackground;
+		Brush? _defaultForeground;
+		WCornerRadius _defaultCornerRadius;
+		bool _isPressed;
 
-        readonly TextBlock _text = new()
-        {
-            VerticalAlignment = VerticalAlignment.Center,
-            Visibility = Visibility.Collapsed,
-        };
+		protected override MauiFloatingActionButton CreatePlatformView() => new MauiFloatingActionButton();
 
-        PointerEventHandler? _pointerPressedHandler;
-        PointerEventHandler? _pointerReleasedHandler;
-        Brush? _defaultBackground;
-        Brush? _defaultForeground;
-        CornerRadius _defaultCornerRadius;
-        bool _isPressed;
+		protected override void ConnectHandler(MauiFloatingActionButton platformView)
+		{
+			_defaultBackground = platformView.Background;
+			_defaultForeground = platformView.Foreground;
+			_defaultCornerRadius = platformView.CornerRadius;
 
-        protected override Button CreatePlatformView()
-        {
-            var content = new Grid
-            {
-                ColumnSpacing = 8,
-            };
+			_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
+			_pointerReleasedHandler = new PointerEventHandler(OnPointerReleased);
 
-            content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            content.Children.Add(_image);
-            content.Children.Add(_text);
-            Grid.SetColumn(_text, 1);
+			platformView.Click += OnClick;
+			platformView.Unloaded += OnUnloaded;
+			platformView.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, true);
+			platformView.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, true);
 
-            return new Button
-            {
-                Content = content,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                Padding = new Thickness(0),
-                Shadow = new ThemeShadow(),
-            };
-        }
+			base.ConnectHandler(platformView);
+		}
 
-        protected override void ConnectHandler(Button platformView)
-        {
-            _defaultBackground = platformView.Background;
-            _defaultForeground = platformView.Foreground;
-            _defaultCornerRadius = platformView.CornerRadius;
+		protected override void DisconnectHandler(MauiFloatingActionButton platformView)
+		{
+			platformView.Click -= OnClick;
+			platformView.Unloaded -= OnUnloaded;
+			platformView.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressedHandler);
+			platformView.RemoveHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler);
 
-            _pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
-            _pointerReleasedHandler = new PointerEventHandler(OnPointerReleased);
+			_pointerPressedHandler = null;
+			_pointerReleasedHandler = null;
+			_isPressed = false;
 
-            platformView.Click += OnClick;
-            platformView.Unloaded += OnUnloaded;
-            platformView.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, true);
-            platformView.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, true);
+			base.DisconnectHandler(platformView);
+			SourceLoader.Reset();
+		}
 
-            base.ConnectHandler(platformView);
-        }
+		public override Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			var size = GetButtonSize(VirtualView.Size);
+			if (!VirtualView.IsExtended || string.IsNullOrEmpty(VirtualView.Text))
+				return new Graphics.Size(size, size);
 
-        protected override void DisconnectHandler(Button platformView)
-        {
-            platformView.Click -= OnClick;
-            platformView.Unloaded -= OnUnloaded;
-            platformView.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressedHandler);
-            platformView.RemoveHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler);
+			var desiredSize = base.GetDesiredSize(widthConstraint, heightConstraint);
+			return new Graphics.Size(Math.Max(desiredSize.Width, size), size);
+		}
 
-            _pointerPressedHandler = null;
-            _pointerReleasedHandler = null;
-            _isPressed = false;
+		public static void MapIcon(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler is FloatingActionButtonHandler fabHandler)
+				fabHandler.SourceLoader.UpdateImageSourceAsync().FireAndForget(handler);
+		}
 
-            base.DisconnectHandler(platformView);
-            SourceLoader.Reset();
-        }
+		public static void MapText(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler.PlatformView is not MauiFloatingActionButton platformView)
+				return;
 
-        public override Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
-        {
-            var size = GetButtonSize(VirtualView.Size);
-            if (!VirtualView.IsExtended || string.IsNullOrEmpty(VirtualView.Text))
-                return new Graphics.Size(size, size);
+			platformView.Label.Text = fab.Text ?? string.Empty;
+			platformView.Label.Visibility = fab.IsExtended && !string.IsNullOrEmpty(fab.Text)
+				? WVisibility.Visible
+				: WVisibility.Collapsed;
+			platformView.InvalidateMeasure();
+			fab.InvalidateMeasure();
+		}
 
-            var desiredSize = base.GetDesiredSize(widthConstraint, heightConstraint);
-            return new Graphics.Size(Math.Max(desiredSize.Width, size), size);
-        }
+		public static void MapSize(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler.PlatformView is not MauiFloatingActionButton platformView)
+				return;
 
-        public static void MapIcon(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler is FloatingActionButtonHandler fabHandler)
-                fabHandler.SourceLoader.UpdateImageSourceAsync().FireAndForget(handler);
-        }
+			var size = GetButtonSize(fab.Size);
+			platformView.Height = size;
+			platformView.Width = fab.IsExtended ? double.NaN : size;
+			platformView.MinHeight = size;
+			platformView.MinWidth = size;
+			platformView.IconImage.Width = fab.Size == FabSize.Mini ? 18 : 24;
+			platformView.IconImage.Height = fab.Size == FabSize.Mini ? 18 : 24;
+			platformView.Padding = fab.IsExtended ? new WThickness(16, 0, 16, 0) : new WThickness(0);
+			platformView.InvalidateMeasure();
+			fab.InvalidateMeasure();
+		}
 
-        public static void MapText(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler is not FloatingActionButtonHandler fabHandler)
-                return;
+		public static void MapBackground(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler.PlatformView is not MauiFloatingActionButton platformView)
+				return;
 
-            fabHandler._text.Text = fab.Text ?? string.Empty;
-            fabHandler._text.Visibility = fab.IsExtended && !string.IsNullOrEmpty(fab.Text)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-            fab.InvalidateMeasure();
-        }
+			var paint = fab.Background;
 
-        public static void MapSize(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler is not FloatingActionButtonHandler fabHandler)
-                return;
+			if (paint is null)
+			{
+				platformView.Resources.RemoveKeys(BackgroundResourceKeys);
+			}
+			else
+			{
+				var brush = Graphics.PaintExtensions.ToPlatform(paint);
+				platformView.Resources.SetValueForAllKey(BackgroundResourceKeys, brush);
+			}
+			platformView.RefreshThemeResources();
+		}
 
-            var size = GetButtonSize(fab.Size);
-            fabHandler.PlatformView.Height = size;
-            fabHandler.PlatformView.Width = fab.IsExtended ? double.NaN : size;
-            fabHandler.PlatformView.MinHeight = size;
-            fabHandler.PlatformView.MinWidth = size;
-            fabHandler._image.Width = fab.Size == FabSize.Mini ? 18 : 24;
-            fabHandler._image.Height = fab.Size == FabSize.Mini ? 18 : 24;
-            fabHandler.PlatformView.Padding = fab.IsExtended ? new Thickness(16, 0, 16, 0) : new Thickness(0);
-        }
+		static readonly string[] BackgroundResourceKeys =
+		{
+			"ButtonBackground",
+			"ButtonBackgroundPointerOver",
+			"ButtonBackgroundPressed",
+			"ButtonBackgroundDisabled",
+		};
 
-        public static void MapBackground(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler is FloatingActionButtonHandler fabHandler)
-                fabHandler.PlatformView.UpdateBackground(fab.Background, fabHandler._defaultBackground);
-        }
+		public static void MapIconColor(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler is not FloatingActionButtonHandler fabHandler ||
+				handler.PlatformView is not MauiFloatingActionButton platformView)
+				return;
 
-        public static void MapIconColor(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler is not FloatingActionButtonHandler fabHandler)
-                return;
+			var foreground = fab.IconColor?.ToPlatform() ?? fabHandler._defaultForeground;
+			platformView.Foreground = foreground;
+			platformView.Label.Foreground = foreground;
+		}
 
-            var foreground = fab.IconColor?.ToPlatform() ?? fabHandler._defaultForeground;
-            fabHandler.PlatformView.Foreground = foreground;
-            fabHandler._text.Foreground = foreground;
-        }
+		public static void MapElevation(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler.PlatformView is not MauiFloatingActionButton platformView)
+				return;
 
-        public static void MapElevation(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler.PlatformView is Button button)
-                button.Translation = new Vector3(0, 0, Math.Max(0, fab.Elevation));
-        }
+			var elevation = Math.Max(0, fab.Elevation);
 
-        public static void MapCornerRadius(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler is not FloatingActionButtonHandler fabHandler)
-                return;
+			if (elevation > 0)
+			{
+				platformView.Shadow ??= new ThemeShadow();
+				platformView.Translation = new Vector3(0, 0, elevation);
+			}
+			else
+			{
+				platformView.Translation = new Vector3(0, 0, 0);
+			}
+		}
 
-            var radius = fab.CornerRadius >= 0
-                ? fab.CornerRadius
-                : GetButtonSize(fab.Size) / 2;
-            fabHandler.PlatformView.CornerRadius = fab.CornerRadius >= 0
-                ? new CornerRadius(radius)
-                : fabHandler._defaultCornerRadius == default
-                    ? new CornerRadius(radius)
-                    : fabHandler._defaultCornerRadius;
-        }
+		public static void MapCornerRadius(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			if (handler.PlatformView is not MauiFloatingActionButton platformView)
+				return;
 
-        public static void MapIsExtended(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            handler.UpdateValue(nameof(IFloatingActionButton.Text));
-            handler.UpdateValue(nameof(IFloatingActionButton.Size));
-            handler.UpdateValue(nameof(IFloatingActionButton.CornerRadius));
-        }
+			var buttonSize = GetButtonSize(fab.Size);
+			var radius = fab.CornerRadius >= 0
+				? fab.CornerRadius
+				: buttonSize / 2;
+			platformView.CornerRadius = new WCornerRadius(radius);
+		}
 
-        static double GetButtonSize(FabSize size) => size == FabSize.Mini ? MiniSize : NormalSize;
+		public static void MapIsExtended(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
+		{
+			handler.UpdateValue(nameof(IFloatingActionButton.Text));
+			handler.UpdateValue(nameof(IFloatingActionButton.Size));
+			handler.UpdateValue(nameof(IFloatingActionButton.CornerRadius));
+			handler.UpdateValue(nameof(IFloatingActionButton.Background));
+			handler.UpdateValue(nameof(IFloatingActionButton.IconColor));
 
-        void OnClick(object sender, RoutedEventArgs e) => VirtualView?.Clicked();
+			// Force parent to re-measure after extended state changes,
+			// otherwise the first toggle won't trigger a layout pass.
+			if (handler.PlatformView is MauiFloatingActionButton platformView)
+			{
+				var parent = platformView.Parent as FrameworkElement;
+				parent?.InvalidateMeasure();
+				parent?.InvalidateArrange();
+			}
+		}
 
-        void OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _isPressed = true;
-            VirtualView?.Pressed();
-        }
+		static double GetButtonSize(FabSize size) => size == FabSize.Mini ? MiniSize : NormalSize;
 
-        void OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            _isPressed = false;
-            VirtualView?.Released();
-        }
+		void OnClick(object sender, RoutedEventArgs e) => VirtualView?.Clicked();
 
-        void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            if (_isPressed)
-            {
-                _isPressed = false;
-                VirtualView?.Released();
-            }
-        }
+		void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+		{
+			_isPressed = true;
+			VirtualView?.Pressed();
+		}
 
-        partial class FabImageSourcePartSetter
-        {
-            public override void SetImageSource(ImageSource? platformImage)
-            {
-                if (Handler is FloatingActionButtonHandler fabHandler)
-                    fabHandler._image.Source = platformImage;
-            }
-        }
-    }
+		void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+		{
+			_isPressed = false;
+			VirtualView?.Released();
+		}
+
+		void OnUnloaded(object sender, RoutedEventArgs e)
+		{
+			if (_isPressed)
+			{
+				_isPressed = false;
+				VirtualView?.Released();
+			}
+		}
+
+		partial class FabImageSourcePartSetter
+		{
+			public override void SetImageSource(ImageSource? platformImage)
+			{
+				if (Handler is FloatingActionButtonHandler fabHandler)
+					fabHandler.PlatformView.IconImage.Source = platformImage;
+			}
+		}
+	}
 }
