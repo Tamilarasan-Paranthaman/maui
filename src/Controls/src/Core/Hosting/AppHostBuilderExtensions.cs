@@ -153,6 +153,7 @@ public static partial class AppHostBuilderExtensions
 		handlersCollection.AddHandler<Shapes.RoundRectangle, RoundRectangleHandler>();
 		handlersCollection.AddHandler<Window, WindowHandler>();
 		handlersCollection.AddHandler<ImageButton, ImageButtonHandler>();
+		handlersCollection.AddHandler<FloatingActionButton, FloatingActionButtonHandler>();
 		handlersCollection.AddHandler<IndicatorView, IndicatorViewHandler>();
 		handlersCollection.AddHandler<RefreshView, RefreshViewHandler>();
 		handlersCollection.AddHandler<SwipeItem, SwipeItemMenuItemHandler>();
