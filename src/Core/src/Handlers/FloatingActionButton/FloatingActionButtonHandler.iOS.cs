@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CoreGraphics;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Platform;
+using Microsoft.Maui.Primitives;
 using UIKit;
 
 namespace Microsoft.Maui.Handlers
@@ -10,7 +11,7 @@ namespace Microsoft.Maui.Handlers
     public partial class FloatingActionButtonHandler : ViewHandler<IFloatingActionButton, UIButton>
     {
         const float NormalSize = 56f;
-        const float MiniSize = 40f;
+        const float IconTextSpacing = 8f;
 
         readonly FabProxy _proxy = new();
 
@@ -39,12 +40,10 @@ namespace Microsoft.Maui.Handlers
 
         public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
         {
-            var height = VirtualView.Size switch
-            {
-                FabSize.Mini => MiniSize,
-                FabSize.Normal => NormalSize,
-                _ => NormalSize
-            };
+            if (Dimension.IsExplicitSet(VirtualView.Width) || Dimension.IsExplicitSet(VirtualView.Height))
+                return base.GetDesiredSize(widthConstraint, heightConstraint);
+
+            var height = NormalSize;
 
             if (VirtualView.IsExtended && !string.IsNullOrEmpty(VirtualView.Text))
             {
@@ -53,12 +52,19 @@ namespace Microsoft.Maui.Handlers
                 var textSize = button.TitleLabel?.IntrinsicContentSize ?? CGSize.Empty;
                 var iconWidth = height * 0.45f; // Icon size
                 var padding = 24f; // Horizontal padding (12 each side)
-                var spacing = 8f; // Space between icon and text
-                var width = iconWidth + spacing + (float)textSize.Width + padding;
+                var width = iconWidth + IconTextSpacing + (float)textSize.Width + padding;
                 return new Size(Math.Max(width, height), height);
             }
 
             return new Size(height, height);
+        }
+
+        public override void PlatformArrange(Rect frame)
+        {
+            base.PlatformArrange(frame);
+
+            if (VirtualView.CornerRadius < 0)
+                PlatformView.Layer.CornerRadius = (float)Math.Min(frame.Width, frame.Height) / 2f;
         }
 
         protected override void DisconnectHandler(UIButton platformView)
@@ -88,23 +94,28 @@ namespace Microsoft.Maui.Handlers
             {
                 button.SetTitle(fab.Text, UIControlState.Normal);
                 button.SetTitleColor(new UIColor(1, 1, 1, 1), UIControlState.Normal);
+                button.SetTitleColor(new UIColor(1, 1, 1, 1), UIControlState.Highlighted);
                 if (fab.IconColor is Color iconClr)
                 {
                     var platformColor = iconClr.ToPlatform();
                     if (platformColor is not null)
+                    {
                         button.SetTitleColor(platformColor, UIControlState.Normal);
+                        button.SetTitleColor(platformColor, UIControlState.Highlighted);
+                    }
                 }
 #nullable disable
                 button.TitleLabel.Font = UIFont.SystemFontOfSize(16, UIFontWeight.Medium);
 #nullable enable
+                button.TitleEdgeInsets = new UIEdgeInsets(0, IconTextSpacing, 0, -IconTextSpacing);
 
                 // Pill shape for extended mode
-                var height = fab.Size == FabSize.Mini ? MiniSize : NormalSize;
-                button.Layer.CornerRadius = height / 2f;
+                button.Layer.CornerRadius = NormalSize / 2f;
             }
             else
             {
                 button.SetTitle(null, UIControlState.Normal);
+                button.TitleEdgeInsets = UIEdgeInsets.Zero;
             }
 
             // Trigger re-measure when text changes in extended mode
@@ -112,22 +123,6 @@ namespace Microsoft.Maui.Handlers
             {
                 fabHandler.VirtualView?.InvalidateMeasure();
             }
-        }
-
-        public static void MapSize(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler.PlatformView is not UIButton button)
-                return;
-
-            var size = fab.Size switch
-            {
-                FabSize.Mini => MiniSize,
-                FabSize.Normal => NormalSize,
-                FabSize.Extended => NormalSize, // Height stays normal for extended
-                _ => NormalSize
-            };
-
-            UpdateButtonShape(button, size);
         }
 
         public static void MapBackground(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
@@ -180,13 +175,11 @@ namespace Microsoft.Maui.Handlers
         public static void MapIsExtended(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
         {
             handler.UpdateValue(nameof(IFloatingActionButton.Text));
-            handler.UpdateValue(nameof(IFloatingActionButton.Size));
 
             // Update corner radius for pill shape vs circle
             if (handler.PlatformView is UIButton button)
             {
-                var height = fab.Size == FabSize.Mini ? MiniSize : NormalSize;
-                button.Layer.CornerRadius = height / 2f;
+                button.Layer.CornerRadius = NormalSize / 2f;
             }
         }
 
@@ -208,9 +201,7 @@ namespace Microsoft.Maui.Handlers
                     platformImage = platformImage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
 
                     // Scale image to fit within the button with padding
-                    var fabSize = Handler.VirtualView?.Size ?? FabSize.Normal;
-                    var buttonSize = fabSize == FabSize.Mini ? MiniSize : NormalSize;
-                    var iconSize = buttonSize * 0.45f; // Icon should be ~45% of button size
+                    var iconSize = NormalSize * 0.45f; // Icon should be ~45% of button size
                     var imageSize = new CGSize(iconSize, iconSize);
 
                     UIGraphics.BeginImageContextWithOptions(imageSize, false, 0);
@@ -225,6 +216,7 @@ namespace Microsoft.Maui.Handlers
                 }
 
                 button.SetImage(platformImage, UIControlState.Normal);
+                button.SetImage(platformImage, UIControlState.Highlighted);
                 button.ImageView!.ContentMode = UIViewContentMode.Center;
 
                 // Center the image within the button
@@ -243,17 +235,24 @@ namespace Microsoft.Maui.Handlers
             {
                 _virtualView = new(virtualView);
                 platformView.TouchUpInside += OnTouchUpInside;
+                platformView.TouchUpOutside += OnTouchUpOutside;
+                platformView.TouchCancel += OnTouchCancel;
                 platformView.TouchDown += OnTouchDown;
             }
 
             public void Disconnect(UIButton platformView)
             {
                 platformView.TouchUpInside -= OnTouchUpInside;
+                platformView.TouchUpOutside -= OnTouchUpOutside;
+                platformView.TouchCancel -= OnTouchCancel;
                 platformView.TouchDown -= OnTouchDown;
+                platformView.Transform = CGAffineTransform.MakeIdentity();
             }
 
             void OnTouchUpInside(object? sender, EventArgs e)
             {
+                AnimateReleased(sender as UIButton);
+
                 if (VirtualView is IFloatingActionButton fab)
                 {
                     fab.Released();
@@ -261,9 +260,36 @@ namespace Microsoft.Maui.Handlers
                 }
             }
 
+            void OnTouchUpOutside(object? sender, EventArgs e)
+            {
+                AnimateReleased(sender as UIButton);
+                VirtualView?.Released();
+            }
+
+            void OnTouchCancel(object? sender, EventArgs e)
+            {
+                AnimateReleased(sender as UIButton);
+                VirtualView?.Released();
+            }
+
             void OnTouchDown(object? sender, EventArgs e)
             {
+                if (sender is UIButton button)
+                {
+                    UIView.Animate(0.1, () =>
+                        button.Transform = CGAffineTransform.MakeScale(0.92f, 0.92f));
+                }
+
                 VirtualView?.Pressed();
+            }
+
+            static void AnimateReleased(UIButton? button)
+            {
+                if (button is null)
+                    return;
+
+                UIView.Animate(0.2, () =>
+                    button.Transform = CGAffineTransform.MakeIdentity());
             }
         }
     }

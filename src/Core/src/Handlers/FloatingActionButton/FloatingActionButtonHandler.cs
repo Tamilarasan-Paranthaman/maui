@@ -19,7 +19,6 @@ namespace Microsoft.Maui.Handlers
             {
                 [nameof(IFloatingActionButton.Source)] = MapIcon,
                 [nameof(IFloatingActionButton.Text)] = MapText,
-                [nameof(IFloatingActionButton.Size)] = MapSize,
                 [nameof(IFloatingActionButton.Background)] = MapBackground,
                 [nameof(IFloatingActionButton.IconColor)] = MapIconColor,
                 [nameof(IFloatingActionButton.Elevation)] = MapElevation,

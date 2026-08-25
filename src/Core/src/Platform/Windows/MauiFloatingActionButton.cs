@@ -17,6 +17,8 @@ namespace Microsoft.Maui.Platform
 		{
 			_image = new Image
 			{
+				Width = 24,
+				Height = 24,
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,
 				Stretch = Stretch.Uniform,

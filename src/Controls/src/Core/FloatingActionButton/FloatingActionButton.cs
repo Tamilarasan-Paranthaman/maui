@@ -32,11 +32,6 @@ namespace Microsoft.Maui.Controls
             nameof(Text), typeof(string), typeof(FloatingActionButton), null,
             propertyChanged: (bindable, oldVal, newVal) => ((FloatingActionButton)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
-        /// <summary>Bindable property for <see cref="Size"/>.</summary>
-        public static readonly BindableProperty SizeProperty = BindableProperty.Create(
-            nameof(Size), typeof(FabSize), typeof(FloatingActionButton), FabSize.Normal,
-            propertyChanged: (bindable, oldVal, newVal) => ((FloatingActionButton)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
-
         /// <summary>Bindable property for <see cref="Anchor"/>.</summary>
         public static readonly BindableProperty AnchorProperty = BindableProperty.Create(
             nameof(Anchor), typeof(FabAnchor), typeof(FloatingActionButton), FabAnchor.BottomRight);
@@ -114,15 +109,6 @@ namespace Microsoft.Maui.Controls
         }
 
         /// <summary>
-        /// Gets or sets the size variant of the FAB.
-        /// </summary>
-        public FabSize Size
-        {
-            get => (FabSize)GetValue(SizeProperty);
-            set => SetValue(SizeProperty, value);
-        }
-
-        /// <summary>
         /// Gets or sets the anchor position of the FAB.
         /// </summary>
         public FabAnchor Anchor
@@ -179,7 +165,6 @@ namespace Microsoft.Maui.Controls
         #region IFloatingActionButton
 
         string IFloatingActionButton.Text => Text;
-        FabSize IFloatingActionButton.Size => Size;
         FabAnchor IFloatingActionButton.Anchor => Anchor;
         float IFloatingActionButton.Elevation => Elevation;
         Color IFloatingActionButton.IconColor => IconColor;

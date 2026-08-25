@@ -8,7 +8,6 @@ namespace Microsoft.Maui.Handlers
 
         public static void MapIcon(IFloatingActionButtonHandler handler, IFloatingActionButton fab) { }
         public static void MapText(IFloatingActionButtonHandler handler, IFloatingActionButton fab) { }
-        public static void MapSize(IFloatingActionButtonHandler handler, IFloatingActionButton fab) { }
         public static void MapBackground(IFloatingActionButtonHandler handler, IFloatingActionButton fab) { }
         public static void MapIconColor(IFloatingActionButtonHandler handler, IFloatingActionButton fab) { }
         public static void MapElevation(IFloatingActionButtonHandler handler, IFloatingActionButton fab) { }

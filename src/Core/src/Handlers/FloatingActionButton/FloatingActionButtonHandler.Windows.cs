@@ -15,7 +15,6 @@ namespace Microsoft.Maui.Handlers
 	public partial class FloatingActionButtonHandler : ViewHandler<IFloatingActionButton, MauiFloatingActionButton>
 	{
 		const double NormalSize = 56;
-		const double MiniSize = 40;
 
 		PointerEventHandler? _pointerPressedHandler;
 		PointerEventHandler? _pointerReleasedHandler;
@@ -60,12 +59,11 @@ namespace Microsoft.Maui.Handlers
 
 		public override Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			var size = GetButtonSize(VirtualView.Size);
 			if (!VirtualView.IsExtended || string.IsNullOrEmpty(VirtualView.Text))
-				return new Graphics.Size(size, size);
+				return new Graphics.Size(NormalSize, NormalSize);
 
 			var desiredSize = base.GetDesiredSize(widthConstraint, heightConstraint);
-			return new Graphics.Size(Math.Max(desiredSize.Width, size), size);
+			return new Graphics.Size(Math.Max(desiredSize.Width, NormalSize), NormalSize);
 		}
 
 		public static void MapIcon(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
@@ -83,23 +81,6 @@ namespace Microsoft.Maui.Handlers
 			platformView.Label.Visibility = fab.IsExtended && !string.IsNullOrEmpty(fab.Text)
 				? WVisibility.Visible
 				: WVisibility.Collapsed;
-			platformView.InvalidateMeasure();
-			fab.InvalidateMeasure();
-		}
-
-		public static void MapSize(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-		{
-			if (handler.PlatformView is not MauiFloatingActionButton platformView)
-				return;
-
-			var size = GetButtonSize(fab.Size);
-			platformView.Height = size;
-			platformView.Width = fab.IsExtended ? double.NaN : size;
-			platformView.MinHeight = size;
-			platformView.MinWidth = size;
-			platformView.IconImage.Width = fab.Size == FabSize.Mini ? 18 : 24;
-			platformView.IconImage.Height = fab.Size == FabSize.Mini ? 18 : 24;
-			platformView.Padding = fab.IsExtended ? new WThickness(16, 0, 16, 0) : new WThickness(0);
 			platformView.InvalidateMeasure();
 			fab.InvalidateMeasure();
 		}
@@ -165,17 +146,15 @@ namespace Microsoft.Maui.Handlers
 			if (handler.PlatformView is not MauiFloatingActionButton platformView)
 				return;
 
-			var buttonSize = GetButtonSize(fab.Size);
 			var radius = fab.CornerRadius >= 0
 				? fab.CornerRadius
-				: buttonSize / 2;
+				: NormalSize / 2;
 			platformView.CornerRadius = new WCornerRadius(radius);
 		}
 
 		public static void MapIsExtended(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
 		{
 			handler.UpdateValue(nameof(IFloatingActionButton.Text));
-			handler.UpdateValue(nameof(IFloatingActionButton.Size));
 			handler.UpdateValue(nameof(IFloatingActionButton.CornerRadius));
 			handler.UpdateValue(nameof(IFloatingActionButton.Background));
 			handler.UpdateValue(nameof(IFloatingActionButton.IconColor));
@@ -184,13 +163,12 @@ namespace Microsoft.Maui.Handlers
 			// otherwise the first toggle won't trigger a layout pass.
 			if (handler.PlatformView is MauiFloatingActionButton platformView)
 			{
+				platformView.Padding = fab.IsExtended ? new WThickness(16, 0, 16, 0) : new WThickness(0);
 				var parent = platformView.Parent as FrameworkElement;
 				parent?.InvalidateMeasure();
 				parent?.InvalidateArrange();
 			}
 		}
-
-		static double GetButtonSize(FabSize size) => size == FabSize.Mini ? MiniSize : NormalSize;
 
 		void OnClick(object sender, RoutedEventArgs e) => VirtualView?.Clicked();
 

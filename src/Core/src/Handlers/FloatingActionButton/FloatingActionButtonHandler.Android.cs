@@ -6,32 +6,36 @@ using Android.Views;
 using Google.Android.Material.FloatingActionButton;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Platform;
+using Microsoft.Maui.Primitives;
 
 namespace Microsoft.Maui.Handlers
 {
     public partial class FloatingActionButtonHandler : ViewHandler<IFloatingActionButton, ExtendedFloatingActionButton>
     {
+        const float DefaultSize = 56f;
+        const float DefaultIconSize = 24f;
+
         // dp to px conversion
         float DpToPx(float dp) => Context.ToPixels(dp);
 
         protected override ExtendedFloatingActionButton CreatePlatformView()
         {
             var fab = new ExtendedFloatingActionButton(Context);
-            // Must shrink immediately - don't set text before this
+            fab.IconSize = (int)DpToPx(DefaultIconSize);
             fab.Shrink();
             return fab;
         }
 
         public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
         {
-            if (!VirtualView.IsExtended)
+            if (!VirtualView.IsExtended &&
+                !Dimension.IsExplicitSet(VirtualView.Width) &&
+                !Dimension.IsExplicitSet(VirtualView.Height))
             {
-                // When shrunk, return circular dimensions
-                var sizeDp = VirtualView.Size == FabSize.Mini ? 40.0 : 56.0;
-                return new Size(sizeDp, sizeDp);
+                return new Size(DefaultSize, DefaultSize);
             }
 
-            // When extended, let the native view measure itself
+            // Extended FABs and explicitly sized collapsed FABs use standard MAUI measurement.
             return base.GetDesiredSize(widthConstraint, heightConstraint);
         }
 
@@ -66,40 +70,11 @@ namespace Microsoft.Maui.Handlers
             if (handler.PlatformView is not ExtendedFloatingActionButton platformFab)
                 return;
 
-            // Only set text when extended, otherwise it affects the shrunk size
             if (fab.IsExtended)
             {
                 platformFab.Text = fab.Text ?? string.Empty;
             }
             platformFab.ContentDescription = fab.Text;
-        }
-
-        public static void MapSize(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
-        {
-            if (handler.PlatformView is not ExtendedFloatingActionButton platformFab)
-                return;
-
-            if (handler is not FloatingActionButtonHandler fabHandler)
-                return;
-
-            var sizeDp = fab.Size == FabSize.Mini ? 40f : 56f;
-            var iconDp = fab.Size == FabSize.Mini ? 18f : 24f;
-
-            var sizePx = (int)fabHandler.DpToPx(sizeDp);
-            platformFab.SetMinimumHeight(sizePx);
-            platformFab.SetMinimumWidth(sizePx);
-
-            // Set icon size
-            platformFab.IconSize = (int)fabHandler.DpToPx(iconDp);
-
-            // Center the icon by setting content gravity and icon gravity
-            platformFab.Gravity = GravityFlags.Center;
-            platformFab.IconGravity = ExtendedFloatingActionButton.IconGravityTextStart;
-            platformFab.IconPadding = 0;
-
-            // Calculate symmetric padding to center icon: (buttonSize - iconSize) / 2
-            var paddingPx = (int)fabHandler.DpToPx((sizeDp - iconDp) / 2f);
-            platformFab.SetPaddingRelative(paddingPx, paddingPx, paddingPx, paddingPx);
         }
 
         public static void MapBackground(IFloatingActionButtonHandler handler, IFloatingActionButton fab)
@@ -152,7 +127,6 @@ namespace Microsoft.Maui.Handlers
             else
             {
                 platformFab.Shrink();
-                // Clear text after shrink to prevent it affecting size
                 platformFab.Post(() => platformFab.Text = string.Empty);
             }
 

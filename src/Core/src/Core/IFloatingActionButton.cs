@@ -15,11 +15,6 @@ namespace Microsoft.Maui
         string? Text { get; }
 
         /// <summary>
-        /// Gets the size variant of the floating action button.
-        /// </summary>
-        FabSize Size { get; }
-
-        /// <summary>
         /// Gets the anchor position of the floating action button.
         /// </summary>
         FabAnchor Anchor { get; }
