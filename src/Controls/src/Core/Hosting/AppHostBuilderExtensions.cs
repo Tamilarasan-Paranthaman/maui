@@ -215,8 +215,8 @@ public static partial class AppHostBuilderExtensions
 #pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
-#if WINDOWS || MACCATALYST
-		handlersCollection.AddHandler<MenuFlyout>(static _ => new MenuFlyoutHandler());
+#if WINDOWS || MACCATALYST || IOS
+		handlersCollection.AddHandler(typeof(MenuFlyout), typeof(MenuFlyoutHandler));
 #endif
 
 #if IOS || MACCATALYST
