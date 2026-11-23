@@ -1,5 +1,4 @@
-﻿using static Android.Resource;
-using AndroidProgressBar = Android.Widget.ProgressBar;
+﻿using AndroidProgressBar = Android.Widget.ProgressBar;
 
 namespace Microsoft.Maui.Handlers
 {
@@ -7,7 +6,7 @@ namespace Microsoft.Maui.Handlers
 	{
 		protected override AndroidProgressBar CreatePlatformView()
 		{
-			return new AndroidProgressBar(Context, null, Attribute.ProgressBarStyleHorizontal)
+			return new MauiProgressBar(Context)
 			{
 				Indeterminate = false,
 				Max = ProgressBarExtensions.Maximum
